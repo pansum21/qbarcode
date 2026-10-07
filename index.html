@@ -1,362 +1,326 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>QBarCode Studio — Small Codes. Big Possibilities.</title>
-  
-  <!-- CDN Libraries: QRCode.js & JsBarcode -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QBar Code Studio — QR Code & Barcode Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- QR Code and Barcode Libraries -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
-
   <style>
-    /* =========================================
-       THEME VARIABLES
-    ========================================= */
     :root {
-      /* Light Theme (Image 2) */
-      --bg: #f8faf7;
-      --card-bg: #ffffff;
-      --card-border: #e2e8e4;
-      --tab-bg: #f1f5f2;
-      --tab-active-bg: #ffffff;
-      --tab-text: #5e6d66;
-      --tab-active-text: #18221e;
-      --accent: #2e604d;
-      --text-main: #18221e;
-      --text-muted: #5e6d66;
-      --input-bg: #ffffff;
-      --input-border: #e2e8e4;
-      --badge-bg: #e6ede8;
-      --badge-text: #2e604d;
-      --btn-primary-bg: #1e3a2f;
-      --btn-primary-hover: #152921;
-      --btn-primary-text: #ffffff;
-      --preview-bg: #fbfdfc;
-      --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-    }
-
-    body.dark-mode {
-      /* Cyber Dark Theme (Image 1) */
-      --bg: #0d0b18;
-      --card-bg: #131127;
-      --card-border: #231f42;
-      --tab-bg: #191633;
-      --tab-active-bg: linear-gradient(135deg, #ff2d87, #8a2be2);
-      --tab-text: #8e88b8;
-      --tab-active-text: #ffffff;
-      --accent: #00e5ff;
-      --text-main: #f1f0f7;
-      --text-muted: #8e88b8;
-      --input-bg: #17142f;
-      --input-border: #2c2754;
-      --badge-bg: #1f1b40;
-      --badge-text: #00e5ff;
-      --btn-primary-bg: linear-gradient(135deg, #ff2d87, #8a2be2);
-      --btn-primary-hover: linear-gradient(135deg, #e02675, #7824c7);
-      --btn-primary-text: #ffffff;
-      --preview-bg: #161331;
-      --card-shadow: 0 10px 35px rgba(0, 0, 0, 0.55);
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --surface: #21262d;
+      --border: #30363d;
+      --accent: #10b981;
+      --accent-hover: #059669;
+      --text: #f0f6fc;
+      --text-muted: #8b949e;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --font-main: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
     }
 
     body {
-      background: var(--bg);
-      color: var(--text-main);
-      padding: 30px 16px 60px;
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-main);
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      min-height: 100vh;
+      padding: 2.5rem 1rem;
     }
 
-    /* Header */
     header {
-      width: 100%;
-      max-width: 540px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 24px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 700;
-      font-size: 1.25rem;
-      letter-spacing: -0.5px;
-    }
-
-    .brand-icon {
-      width: 32px;
-      height: 32px;
-      background: var(--btn-primary-bg);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #ffffff;
-      font-size: 0.85rem;
-      font-weight: 800;
-    }
-
-    .brand-badge {
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      background: var(--badge-bg);
-      color: var(--badge-text);
-      padding: 3px 7px;
-      border-radius: 4px;
-      font-weight: 700;
-    }
-
-    /* Theme Switch Button */
-    .theme-toggle-btn {
-      background: var(--badge-bg);
-      border: 1px solid var(--card-border);
-      color: var(--text-main);
-      padding: 6px 12px;
-      border-radius: 20px;
-      cursor: pointer;
-      font-size: 0.85rem;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-weight: 600;
-    }
-
-    /* Hero Section */
-    .hero {
       text-align: center;
-      max-width: 540px;
-      margin-bottom: 28px;
+      margin-bottom: 2rem;
+      max-width: 600px;
     }
 
-    .sub-tagline {
+    .badge {
+      display: inline-block;
       font-size: 0.75rem;
-      text-transform: uppercase;
       font-weight: 700;
-      letter-spacing: 1.5px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      background: rgba(16, 185, 129, 0.15);
       color: var(--accent);
-      margin-bottom: 8px;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      margin-bottom: 0.75rem;
     }
 
     h1 {
       font-size: 2.25rem;
-      letter-spacing: -1px;
-      line-height: 1.15;
-      margin-bottom: 10px;
-      color: var(--text-main);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #fff;
+      margin-bottom: 0.5rem;
     }
 
-    .hero-desc {
+    p.subtitle {
       color: var(--text-muted);
       font-size: 0.95rem;
-      line-height: 1.4;
+      line-height: 1.5;
     }
 
-    /* Card Container */
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 20px;
-      box-shadow: var(--card-shadow);
+    .container {
       width: 100%;
-      max-width: 540px;
-      padding: 24px;
+      max-width: 860px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
     }
 
-    /* Tabs */
-    .tab-container {
+    .tabs {
       display: flex;
-      background: var(--tab-bg);
-      border-radius: 14px;
-      padding: 4px;
-      margin-bottom: 24px;
-      gap: 6px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
     }
 
     .tab-btn {
       flex: 1;
-      padding: 12px 14px;
-      border: none;
       background: transparent;
-      border-radius: 10px;
-      font-size: 0.92rem;
+      border: none;
+      outline: none;
+      color: var(--text-muted);
+      font-family: var(--font-main);
+      font-size: 0.95rem;
       font-weight: 600;
-      color: var(--tab-text);
+      padding: 1rem 1.25rem;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
+      transition: all 0.2s ease;
+      border-bottom: 2px solid transparent;
+    }
+
+    .tab-btn:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.02);
     }
 
     .tab-btn.active {
-      background: var(--tab-active-bg);
-      color: var(--tab-active-text);
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+      color: #fff;
+      border-bottom-color: var(--accent);
+      background: var(--card-bg);
     }
 
-    /* Form Fields */
-    .form-group {
-      margin-bottom: 18px;
+    .app-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      padding: 2rem;
     }
 
-    .label-row {
+    @media (max-width: 768px) {
+      .app-body {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .control-pane {
       display: flex;
-      justify-content: space-between;
-      margin-bottom: 8px;
-      font-size: 0.825rem;
-      font-weight: 700;
-      letter-spacing: 0.5px;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    label {
+      font-size: 0.82rem;
+      font-weight: 600;
       text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
     }
 
-    .label-tag {
-      font-size: 0.75rem;
-      color: var(--accent);
-      text-transform: none;
-      font-weight: 500;
-    }
-
-    textarea, input[type="text"], select {
-      width: 100%;
-      background: var(--input-bg);
-      border: 1.5px solid var(--input-border);
-      border-radius: 12px;
-      padding: 14px;
+    input[type="text"], select {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--font-main);
+      padding: 0.8rem 1rem;
+      border-radius: var(--radius-sm);
       font-size: 0.95rem;
-      color: var(--text-main);
       outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
     }
 
-    textarea {
-      resize: vertical;
-      min-height: 80px;
-    }
-
-    textarea:focus, input[type="text"]:focus, select:focus {
+    input[type="text"]:focus, select:focus {
       border-color: var(--accent);
     }
 
-    /* Action Pill Presets */
-    .pills-group {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 10px;
-      align-items: center;
-    }
-
-    .pill-label {
+    .input-hint {
       font-size: 0.75rem;
       color: var(--text-muted);
     }
 
-    .pill-btn {
-      background: var(--tab-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 20px;
-      padding: 5px 12px;
-      font-size: 0.75rem;
-      cursor: pointer;
-      color: var(--text-main);
-    }
-
-    /* Theme-Aware Color Swatches */
-    .color-swatches {
+    .quick-chips {
       display: flex;
-      gap: 10px;
-      margin-top: 6px;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
     }
 
-    .color-dot {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      border: 2px solid transparent;
+    .chip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      border-radius: 9999px;
+      padding: 3px 10px;
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
       cursor: pointer;
+      transition: all 0.15s ease;
     }
 
-    .color-dot.active {
-      transform: scale(1.1);
-      box-shadow: 0 0 0 2px var(--card-bg), 0 0 0 4px var(--accent);
+    .chip:hover {
+      color: var(--text);
+      border-color: var(--text-muted);
     }
 
-    /* Generator Button */
     .btn-primary {
-      width: 100%;
-      padding: 14px;
-      background: var(--btn-primary-bg);
-      color: var(--btn-primary-text);
+      background: var(--accent);
+      color: #0d1117;
       border: none;
-      border-radius: 12px;
-      font-size: 0.95rem;
+      outline: none;
+      font-family: var(--font-main);
       font-weight: 700;
+      font-size: 0.95rem;
+      padding: 0.85rem 1.25rem;
+      border-radius: var(--radius-sm);
       cursor: pointer;
-      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.2s, transform 0.1s;
     }
 
-    /* Output Preview Area */
-    .preview-section {
-      margin-top: 24px;
-      padding: 24px;
-      background: var(--preview-bg);
-      border: 1px dashed var(--card-border);
-      border-radius: 14px;
+    .btn-primary:hover {
+      background: var(--accent-hover);
+    }
+
+    .btn-primary:active {
+      transform: scale(0.99);
+    }
+
+    .btn-download {
+      background: transparent;
+      color: #fff;
+      border: 1px solid var(--border);
+      outline: none;
+      font-family: var(--font-main);
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      margin-top: 1rem;
+      transition: all 0.2s;
+    }
+
+    .btn-download:hover {
+      background: var(--surface);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .preview-pane {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 200px;
+      background: var(--surface);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
       text-align: center;
+      min-height: 320px;
     }
 
-    #qrOutput {
-      padding: 10px;
+    .preview-box {
       background: #ffffff;
-      border-radius: 10px;
-    }
-
-    #barcodeOutput svg {
+      padding: 1rem;
+      border-radius: var(--radius-sm);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
       max-width: 100%;
-      background: #ffffff;
-      padding: 8px;
-      border-radius: 8px;
+      overflow: hidden;
     }
 
-    .download-container {
-      width: 100%;
-      margin-top: 16px;
-      display: none;
+    #qr-container img, #qr-container canvas {
+      max-width: 100%;
+      height: auto !important;
+      display: block;
+    }
+
+    #barcode-container svg {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .empty-state {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      display: flex;
       flex-direction: column;
-      gap: 10px;
+      align-items: center;
+      gap: 8px;
     }
 
-    .btn-download {
-      background: var(--tab-bg);
-      color: var(--text-main);
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
-      padding: 12px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      background: #ef4444;
+      color: #fff;
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 500;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+      z-index: 1000;
+    }
+
+    .toast.show {
+      opacity: 1;
     }
 
     footer {
-      margin-top: 36px;
+      margin-top: 2rem;
       text-align: center;
       font-size: 0.8rem;
       color: var(--text-muted);
@@ -366,209 +330,259 @@
 <body>
 
   <header>
-    <div class="brand">
-      <div class="brand-icon">QB</div>
-      <span>QBarCode</span>
-      <span class="brand-badge">STUDIO</span>
-    </div>
-    <button class="theme-toggle-btn" onclick="toggleTheme()" id="themeBtn">🌙 Dark Mode</button>
+    <div class="badge">100% Free & Unlimited</div>
+    <h1>QBar Code Studio</h1>
+    <p class="subtitle">Generate high-clarity QR codes and professional barcodes instantly for URLs, numbers, or alphanumeric text.</p>
   </header>
 
-  <div class="hero">
-    <div class="sub-tagline">✦ Less Typing. More Connecting.</div>
-    <h1>Big ideas. Small codes.</h1>
-    <p class="hero-desc">Make anything scannable. Free QR codes & barcodes, in a few clicks.</p>
-  </div>
-
-  <div class="card">
-    <!-- Switcher Tabs -->
-    <div class="tab-container">
-      <button class="tab-btn active" id="tabQrBtn" onclick="switchTab('qr')">
-        <span>⚏</span> QR Code
+  <div class="container">
+    <div class="tabs">
+      <button class="tab-btn active" id="tab-qr" onclick="switchTab('qr')">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        QR Code Generator
       </button>
-      <button class="tab-btn" id="tabBarcodeBtn" onclick="switchTab('barcode')">
-        <span>|||||</span> Barcode
+      <button class="tab-btn" id="tab-barcode" onclick="switchTab('barcode')">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="5" x2="3" y2="19"></line><line x1="7" y1="5" x2="7" y2="19"></line><line x1="11" y1="5" x2="11" y2="19"></line><line x1="15" y1="5" x2="15" y2="19"></line><line x1="19" y1="5" x2="19" y2="19"></line><line x1="21" y1="5" x2="21" y2="19"></line></svg>
+        Barcode Generator
       </button>
     </div>
 
-    <!-- QR Panel -->
-    <div id="panelQr">
-      <div class="form-group">
-        <div class="label-row">
-          <span>Content or Text</span>
-          <span class="label-tag">Any Input Supported</span>
+    <!-- QR Section -->
+    <div id="section-qr" class="app-body">
+      <div class="control-pane">
+        <div class="field-group">
+          <label>Your Content (URL or Text)</label>
+          <input type="text" id="qr-input" placeholder="Enter URL, plain numbers (e.g. 12345), or mixed text..." />
+          <div class="quick-chips">
+            <span class="chip" onclick="fillInput('qr-input', 'https://example.com')">Link</span>
+            <span class="chip" onclick="fillInput('qr-input', '12345')">12345</span>
+            <span class="chip" onclick="fillInput('qr-input', 'qsdt45673a2d6')">Alphanumeric</span>
+          </div>
         </div>
-        <textarea id="qrInput" placeholder="https://github.com or plain text..."></textarea>
-        
-        <div class="pills-group">
-          <span class="pill-label">Examples:</span>
-          <button class="pill-btn" onclick="setInput('qrInput', 'https://github.com')">🔗 Github</button>
-          <button class="pill-btn" onclick="setInput('qrInput', 'Welcome to QBarCode Studio!')">Text</button>
-          <button class="pill-btn" onclick="setInput('qrInput', 'https://example.com')">Link</button>
+
+        <div class="field-group">
+          <label>Export Format</label>
+          <select id="qr-format">
+            <option value="PNG">PNG Image</option>
+            <option value="SVG">SVG Vector</option>
+          </select>
         </div>
+
+        <button class="btn-primary" onclick="generateQR()">Generate QR Code</button>
       </div>
 
-      <div class="form-group">
-        <label class="label-row"><span>Color Style</span></label>
-        <div class="color-swatches">
-          <div class="color-dot active" style="background: #000000;" onclick="selectColor(this, '#000000')"></div>
-          <div class="color-dot" style="background: #ff2d87;" onclick="selectColor(this, '#ff2d87')"></div>
-          <div class="color-dot" style="background: #8a2be2;" onclick="selectColor(this, '#8a2be2')"></div>
-          <div class="color-dot" style="background: #00c853;" onclick="selectColor(this, '#00c853')"></div>
+      <div class="preview-pane">
+        <div id="qr-display" class="empty-state">
+          <span>Generated QR code will appear here</span>
         </div>
+        <button id="qr-download-btn" class="btn-download" style="display: none;" onclick="downloadQR()">
+          Download QR Code
+        </button>
       </div>
-
-      <button class="btn-primary" onclick="generateQRCode()">Generate QR Code</button>
     </div>
 
-    <!-- Barcode Panel -->
-    <div id="panelBarcode" style="display: none;">
-      <div class="form-group">
-        <div class="label-row">
-          <span>Barcode Content</span>
-          <span class="label-tag">CODE128 Supported</span>
+    <!-- Barcode Section -->
+    <div id="section-barcode" class="app-body" style="display: none;">
+      <div class="control-pane">
+        <div class="field-group">
+          <label>Barcode Content</label>
+          <input type="text" id="barcode-input" placeholder="Enter numbers (e.g. 12345) or mixed text..." />
+          <div class="quick-chips">
+            <span class="chip" onclick="fillInput('barcode-input', '12345')">12345</span>
+            <span class="chip" onclick="fillInput('barcode-input', 'qsdt45673a2d6')">qsdt45673a2d6</span>
+          </div>
         </div>
-        <input type="text" id="barcodeInput" placeholder="Enter barcode digits or letters..." />
-        
-        <div class="pills-group">
-          <span class="pill-label">Examples:</span>
-          <button class="pill-btn" onclick="setInput('barcodeInput', '1234567890')"># Numbers</button>
-          <button class="pill-btn" onclick="setInput('barcodeInput', 'QBARCODE2026')">Letters</button>
+
+        <div class="field-group">
+          <label>Barcode Format</label>
+          <select id="barcode-format">
+            <option value="CODE128">CODE128 (Default: Numbers, Letters, Symbols)</option>
+            <option value="CODE39">CODE39 (Uppercase Alphanumeric)</option>
+            <option value="EAN13">EAN-13 (12-13 Digits)</option>
+            <option value="UPC">UPC (11-12 Digits)</option>
+            <option value="ITF">ITF (Interleaved 2 of 5)</option>
+          </select>
+          <span class="input-hint" id="format-hint">Supports full alphanumeric strings.</span>
         </div>
+
+        <div class="field-group">
+          <label>Export Format</label>
+          <select id="barcode-export-format">
+            <option value="PNG">PNG Image</option>
+            <option value="SVG">SVG Vector</option>
+          </select>
+        </div>
+
+        <button class="btn-primary" onclick="generateBarcode()">Generate Barcode</button>
       </div>
 
-      <button class="btn-primary" onclick="generateBarcode()">Generate Barcode</button>
-    </div>
-
-    <!-- Live Preview Area -->
-    <div class="preview-section">
-      <div id="qrOutput"></div>
-      <div id="barcodeOutput" style="display: none;"><svg id="barcodeSvg"></svg></div>
-      <p id="placeholderText" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 10px;">
-        Your generated code will appear here.
-      </p>
-
-      <div class="download-container" id="downloadWrapper">
-        <button class="btn-download" onclick="downloadCurrentCode()">Download File</button>
+      <div class="preview-pane">
+        <div id="barcode-display" class="empty-state">
+          <span>Generated Barcode will appear here</span>
+        </div>
+        <button id="barcode-download-btn" class="btn-download" style="display: none;" onclick="downloadBarcode()">
+          Download Barcode
+        </button>
       </div>
     </div>
   </div>
+
+  <div id="toast" class="toast">Please enter some text or numbers first.</div>
 
   <footer>
-    <p>© 2026 QBarCode Studio · Unlimited & Client-Side</p>
+    &copy; 2026 QBar Code Studio · Made to run entirely in your browser with no backend required.
   </footer>
 
   <script>
     let activeTab = 'qr';
-    let selectedColor = '#000000';
+    let qrInstance = null;
 
-    // Theme Switch Logic
-    function toggleTheme() {
-      const isDark = document.body.classList.toggle('dark-mode');
-      const themeBtn = document.getElementById('themeBtn');
-      themeBtn.innerText = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
     }
 
-    // Tab Switching Logic
     function switchTab(tab) {
       activeTab = tab;
-      const tabQrBtn = document.getElementById('tabQrBtn');
-      const tabBarcodeBtn = document.getElementById('tabBarcodeBtn');
-      const panelQr = document.getElementById('panelQr');
-      const panelBarcode = document.getElementById('panelBarcode');
-      const qrOutput = document.getElementById('qrOutput');
-      const barcodeOutput = document.getElementById('barcodeOutput');
-
-      if (tab === 'qr') {
-        tabQrBtn.classList.add('active');
-        tabBarcodeBtn.classList.remove('active');
-        panelQr.style.display = 'block';
-        panelBarcode.style.display = 'none';
-        qrOutput.style.display = 'block';
-        barcodeOutput.style.display = 'none';
-      } else {
-        tabBarcodeBtn.classList.add('active');
-        tabQrBtn.classList.remove('active');
-        panelBarcode.style.display = 'block';
-        panelQr.style.display = 'none';
-        qrOutput.style.display = 'none';
-        barcodeOutput.style.display = 'block';
-      }
+      document.getElementById('tab-qr').classList.toggle('active', tab === 'qr');
+      document.getElementById('tab-barcode').classList.toggle('active', tab === 'barcode');
+      document.getElementById('section-qr').style.display = tab === 'qr' ? 'grid' : 'none';
+      document.getElementById('section-barcode').style.display = tab === 'barcode' ? 'grid' : 'none';
     }
 
-    function selectColor(el, color) {
-      document.querySelectorAll('.color-dot').forEach(dot => dot.classList.remove('active'));
-      el.classList.add('active');
-      selectedColor = color;
-    }
-
-    function setInput(id, val) {
+    function fillInput(id, val) {
       document.getElementById(id).value = val;
     }
 
-    function generateQRCode() {
-      const input = document.getElementById('qrInput').value.trim();
-      const qrContainer = document.getElementById('qrOutput');
-      const placeholder = document.getElementById('placeholderText');
-      const downloadWrapper = document.getElementById('downloadWrapper');
+    // Enter key triggers
+    document.getElementById('qr-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') generateQR();
+    });
+    document.getElementById('barcode-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') generateBarcode();
+    });
 
-      if (!input) return;
+    // QR Generation
+    function generateQR() {
+      const val = document.getElementById('qr-input').value.trim();
+      if (!val) {
+        showToast('Please enter a URL or content to generate QR code.');
+        return;
+      }
 
-      qrContainer.innerHTML = '';
-      placeholder.style.display = 'none';
+      const display = document.getElementById('qr-display');
+      display.className = 'preview-box';
+      display.innerHTML = '<div id="qr-container"></div>';
 
-      new QRCode(qrContainer, {
-        text: input,
-        width: 170,
-        height: 170,
-        colorDark: selectedColor,
-        colorLight: '#ffffff',
+      qrInstance = new QRCode(document.getElementById('qr-container'), {
+        text: val,
+        width: 200,
+        height: 200,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
         correctLevel: QRCode.CorrectLevel.H
       });
 
-      downloadWrapper.style.display = 'flex';
+      document.getElementById('qr-download-btn').style.display = 'inline-flex';
     }
 
-    function generateBarcode() {
-      const input = document.getElementById('barcodeInput').value.trim();
-      const placeholder = document.getElementById('placeholderText');
-      const downloadWrapper = document.getElementById('downloadWrapper');
+    function downloadQR() {
+      const format = document.getElementById('qr-format').value;
+      const img = document.querySelector('#qr-container img');
+      const canvas = document.querySelector('#qr-container canvas');
 
-      if (!input) return;
+      if (!img && !canvas) return;
+
+      const link = document.createElement('a');
+      const baseName = 'qr-code-' + Date.now();
+
+      if (format === 'SVG') {
+        const svgData = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><image href="${img ? img.src : canvas.toDataURL()}" width="200" height="200"/></svg>`;
+        const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+        link.href = URL.createObjectURL(blob);
+        link.download = `${baseName}.svg`;
+      } else {
+        link.href = img ? img.src : canvas.toDataURL('image/png');
+        link.download = `${baseName}.png`;
+      }
+      link.click();
+    }
+
+    // Barcode Generation
+    function generateBarcode() {
+      const val = document.getElementById('barcode-input').value.trim();
+      const format = document.getElementById('barcode-format').value;
+
+      if (!val) {
+        showToast('Please enter text or numbers for the barcode.');
+        return;
+      }
+
+      // Format validations
+      if ((format === 'EAN13' || format === 'UPC') && !/^\d+$/.test(val)) {
+        showToast(`${format} strictly requires numeric digits.`);
+        return;
+      }
+
+      const display = document.getElementById('barcode-display');
+      display.className = 'preview-box';
+      display.innerHTML = '<div id="barcode-container"><svg id="barcode-svg"></svg></div>';
 
       try {
-        JsBarcode('#barcodeSvg', input, {
-          format: 'CODE128',
-          lineColor: '#000000',
+        JsBarcode("#barcode-svg", val, {
+          format: format,
+          lineColor: "#000000",
           width: 2,
-          height: 60,
-          displayValue: true
+          height: 80,
+          displayValue: true,
+          font: "Plus Jakarta Sans",
+          fontSize: 14,
+          margin: 10
         });
-        placeholder.style.display = 'none';
-        downloadWrapper.style.display = 'flex';
-      } catch (e) {
-        alert('Invalid barcode input characters.');
+        document.getElementById('barcode-download-btn').style.display = 'inline-flex';
+      } catch (err) {
+        showToast('Invalid characters for the selected barcode format.');
       }
     }
 
-    function downloadCurrentCode() {
-      if (activeTab === 'qr') {
-        const canvas = document.querySelector('#qrOutput canvas');
-        if (!canvas) return;
+    function downloadBarcode() {
+      const format = document.getElementById('barcode-export-format').value;
+      const svg = document.getElementById('barcode-svg');
+      if (!svg) return;
+
+      const baseName = 'barcode-' + Date.now();
+      const serializer = new XMLSerializer();
+      const svgString = serializer.serializeToString(svg);
+
+      if (format === 'SVG') {
+        const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
         const link = document.createElement('a');
-        link.download = 'qbarcode-qr.png';
-        link.href = canvas.toDataURL('image/png');
+        link.href = URL.createObjectURL(blob);
+        link.download = `${baseName}.svg`;
         link.click();
       } else {
-        const svg = document.getElementById('barcodeSvg');
-        const serializer = new XMLSerializer();
-        const svgBlob = new Blob([serializer.serializeToString(svg)], { type: 'image/svg+xml;charset=utf-8' });
+        const canvas = document.createElement('canvas');
+        const bbox = svg.getBoundingClientRect();
+        canvas.width = bbox.width * 2;
+        canvas.height = bbox.height * 2;
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+        const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
         const url = URL.createObjectURL(svgBlob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = 'qbarcode.svg';
-        link.click();
-        URL.revokeObjectURL(url);
+
+        img.onload = function() {
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          URL.revokeObjectURL(url);
+          const link = document.createElement('a');
+          link.href = canvas.toDataURL('image/png');
+          link.download = `${baseName}.png`;
+          link.click();
+        };
+        img.src = url;
       }
     }
   </script>
