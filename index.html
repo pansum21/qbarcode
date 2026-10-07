@@ -32,14 +32,14 @@
   @media (max-width: 480px) { .theme-switch .label { display: none; } .theme-switch { padding-right: 6px; } }
 </style>
 </head>
-<body data-theme="light">
+<body data-theme="dark">
 
-<iframe id="view-dark" class="view" title="QBar Code Studio – light theme"></iframe>
-<iframe id="view-light" class="view" title="QBar Code Studio – dark theme" hidden></iframe>
+<iframe id="view-dark" class="view" title="QBar Code Studio – dark theme"></iframe>
+<iframe id="view-light" class="view" title="QBar Code Studio – light theme" hidden></iframe>
 
-<button class="theme-switch" id="theme-switch" type="button" role="switch" aria-checked="false" aria-label="Switch to dark theme">
+<button class="theme-switch" id="theme-switch" type="button" role="switch" aria-checked="true" aria-label="Switch to light theme">
   <span class="track" aria-hidden="true"><span class="knob"></span></span>
-  <span class="label" id="theme-label">Dark theme</span>
+  <span class="label" id="theme-label">Light theme</span>
 </button>
 
 <script>
@@ -69,7 +69,7 @@
     setTheme(document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light', true);
   });
 
-  var start = 'light';
+  var start = 'dark';
   try { if (localStorage.getItem('qbar-theme') === 'dark') start = 'dark'; } catch (e) {}
   setTheme(start, false);
 })();
