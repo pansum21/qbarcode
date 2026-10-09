@@ -1,1 +1,1 @@
-# qbarcode
+# qbarcode studio
