@@ -1,605 +1,492 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>QBar Code Studio</title>
-<style>
-  html, body { margin: 0; height: 100%; overflow: hidden; }
-  .view { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
-  .view[hidden] { display: none; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- Primary Meta Tags -->
+  <title>QBar Code Studio — Free QR Code & Barcode Generator Online</title>
+  <meta name="title" content="QBar Code Studio — Free QR Code & Barcode Generator Online" />
+  <meta name="description" content="Generate high-resolution QR codes and barcodes 100% free and unlimited. Create Google review QR codes, WiFi, vCard, CODE128, EAN-13, UPC, and more." />
+  <link rel="canonical" href="https://yourdomain.com/" />
 
-  /* Switch pinned to TOP-RIGHT corner */
-  .theme-switch {
-    --sw-bg: #285a43; --sw-fg: #ffffff; --sw-knob: #d4edac;
-    position: fixed; z-index: 2147483000;
-    top: max(16px, env(safe-area-inset-top));
-    right: max(16px, env(safe-area-inset-right));
-    display: inline-flex; align-items: center; gap: 10px;
-    padding: 6px 14px 6px 6px; border: 0; border-radius: 999px;
-    background: var(--sw-bg); color: var(--sw-fg);
-    font: 600 13px/1 "Inter", "Outfit", system-ui, -apple-system, "Segoe UI", sans-serif;
-    box-shadow: 0 6px 20px rgba(0,0,0,.28), 0 0 0 1px rgba(255,255,255,.18) inset;
-    cursor: pointer; transition: transform .15s ease;
+  <!-- Open Graph / Social -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="QBar Code Studio — Free QR Code & Barcode Generator" />
+  <meta property="og:description" content="Small Codes. Big Possibilities. Create high-resolution QR codes and retail barcodes in seconds—free, unlimited, client-side." />
+
+  <!-- Schema.org for Google Rich Results -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "QBar Code Studio",
+    "applicationCategory": "UtilityApplication",
+    "operatingSystem": "All",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
   }
-  .theme-switch:hover { transform: translateY(-1px); }
-  .theme-switch:active { transform: translateY(0) scale(.98); }
-  .theme-switch:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
-  body[data-theme="dark"] .theme-switch { --sw-bg: #1c1233; --sw-fg: #ffffff; --sw-knob: #FF2E93; }
+  </script>
 
-  .track { position: relative; width: 44px; height: 26px; border-radius: 999px; background: rgba(255,255,255,.18); flex: none; }
-  .knob { position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--sw-knob); transition: transform .22s ease; }
-  body[data-theme="dark"] .knob { transform: translateX(18px); }
-  @media (prefers-reduced-motion: reduce) { .knob, .theme-switch { transition: none; } }
-  @media (max-width: 480px) { .theme-switch .label { display: none; } .theme-switch { padding-right: 6px; } }
-</style>
+  <!-- CDNs -->
+  <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #f6f7f2;
+      --card-bg: #ffffff;
+      --border: #e4e8df;
+      --text: #243128;
+      --text-muted: #7b8477;
+      --accent: #285a43;
+      --accent-hover: #1e4533;
+      --tab-bg: #f1f3ed;
+      --tab-active: #ffffff;
+      --input-bg: #ffffff;
+      --switch-bg: #285a43;
+      --switch-text: #ffffff;
+      --code-bg: #ffffff;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    }
+
+    body[data-theme="dark"] {
+      --bg: #07090e;
+      --card-bg: #121625;
+      --border: rgba(255, 255, 255, 0.12);
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent: #00F0FF;
+      --accent-hover: #00c8d6;
+      --tab-bg: #0b0f19;
+      --tab-active: linear-gradient(135deg, #FF2E93, #7000FF);
+      --input-bg: #0b0f19;
+      --switch-bg: #1c1233;
+      --switch-text: #ffffff;
+      --code-bg: #ffffff;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px 16px 60px;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    /* Fixed Top-Right Switch Button */
+    .theme-switch {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 100;
+      background: var(--switch-bg);
+      color: var(--switch-text);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    header {
+      width: 100%;
+      max-width: 680px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .brand-title {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 6px;
+    }
+
+    .tagline {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    .app-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      width: 100%;
+      max-width: 680px;
+      padding: 24px;
+    }
+
+    .tabs {
+      display: flex;
+      background: var(--tab-bg);
+      padding: 4px;
+      border-radius: 12px;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: var(--tab-active);
+      color: var(--text);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    body[data-theme="dark"] .tab-btn.active {
+      color: #ffffff;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--accent);
+      color: #07090e;
+      border: none;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    body[data-theme="light"] .submit-btn {
+      color: #ffffff;
+    }
+
+    .preview-box {
+      margin-top: 24px;
+      padding: 24px;
+      background: var(--tab-bg);
+      border: 1px dashed var(--border);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 220px;
+    }
+
+    #qrTarget, #bcTarget {
+      background: var(--code-bg);
+      padding: 12px;
+      border-radius: 8px;
+    }
+
+    #bcSvg {
+      max-width: 100%;
+      display: block;
+    }
+
+    .download-btn {
+      margin-top: 14px;
+      padding: 10px 20px;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: none;
+    }
+
+    /* Crawlable How It Works Copy */
+    .seo-guide {
+      width: 100%;
+      max-width: 680px;
+      margin-top: 36px;
+      padding: 24px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--card-bg);
+    }
+
+    .seo-guide h2 {
+      font-size: 1.25rem;
+      margin-bottom: 12px;
+    }
+
+    .seo-guide p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .guide-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .guide-item {
+      padding: 10px;
+      background: var(--tab-bg);
+      border-radius: 8px;
+      font-size: 0.8rem;
+    }
+
+    .guide-item strong {
+      display: block;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    footer {
+      margin-top: 32px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+  </style>
 </head>
 <body data-theme="dark">
 
-<iframe id="view-light" class="view" title="QBar Code Studio – light theme" hidden></iframe>
-<iframe id="view-dark" class="view" title="QBar Code Studio – dark theme"></iframe>
+  <button class="theme-switch" id="themeBtn" onclick="toggleTheme()">☀️ Light Mode</button>
 
-<button class="theme-switch" id="theme-switch" type="button" role="switch" aria-checked="true" aria-label="Switch to light theme">
-  <span class="track" aria-hidden="true"><span class="knob"></span></span>
-  <span class="label" id="theme-label">Light theme</span>
-</button>
-
-<script>
-(function () {
-  var SOURCES = {
-    /* =========================================================================
-       LIGHT THEME (Preserves all original light styling, "How it works" dialog,
-       and complete functional barcode / QR generation)
-       ========================================================================= */
-    light: `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#f6f7f2">
-<title>QBar Code Studio — Small Codes. Big Possibilities.</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.5.0/lib/qr-code-styling.js"><\/script>
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"><\/script>
-<style>
-:root {
-  color-scheme: light;
-  --page: #f6f7f2; --white: #ffffff; --ink: #243128; --muted: #7b8477;
-  --line: #e4e8df; --green: #285a43; --green-dark: #1e4533; --green-soft: #eaf1e4;
-  --lime: #d4edac; --amber: #91651f; --red: #ad453d;
-  --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --heading: "Manrope", var(--font);
-}
-*, ::before, ::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body {
-  margin: 0; min-width: 300px; color: var(--ink);
-  background: radial-gradient(ellipse at 50% 0%, rgba(218, 230, 202, .35), transparent 48%), var(--page);
-  font-family: var(--font); font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased;
-  padding-bottom: 60px;
-}
-button, input, textarea, select { font: inherit; -webkit-tap-highlight-color: transparent; }
-button { cursor: pointer; color: inherit; }
-button:disabled { cursor: not-allowed; }
-a { color: inherit; text-decoration: none; }
-button:focus-visible, a:focus-visible, select:focus-visible { outline: rgb(157, 187, 131) solid 3px; outline-offset: 4px; }
-::selection { background: rgb(217, 235, 200); color: rgb(33, 66, 48); }
-.icon { display: inline-block; width: 18px; height: 18px; flex-shrink: 0; fill: none; stroke: currentcolor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; vertical-align: middle; }
-.site-header { width: calc(100% - 64px); max-width: 1160px; min-height: 84px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 1px solid rgba(219, 226, 210, 0.8); }
-.brand { display: inline-flex; align-items: center; gap: 10px; }
-.brand-mark { display: grid; place-items: center; width: 37px; height: 37px; border-radius: 11px; color: var(--lime); background: var(--green); box-shadow: rgba(255, 255, 255, 0.1) 0 0 0 1px inset; }
-.brand-name { font-family: var(--heading); font-size: 21px; font-weight: 800; letter-spacing: -0.9px; }
-.brand-studio { margin-left: 6px; padding: 4px 5px; border-radius: 4px; background: rgb(232, 237, 223); color: rgb(101, 117, 90); font-size: 8px; font-weight: 650; letter-spacing: 1.2px; vertical-align: 3px; }
-.header-actions { display: flex; align-items: center; gap: 27px; }
-.header-note { display: flex; align-items: center; gap: 7px; color: rgb(115, 128, 105); font-size: 11px; }
-.help-button { display: inline-flex; align-items: center; gap: 7px; padding: 8px 0; border: 0; background: none; font-size: 11px; font-weight: 550; }
-.help-button:hover { color: var(--green); }
-.page-container { width: calc(100% - 48px); max-width: 1080px; margin: 0 auto; }
-.hero { padding: 31px 12px; text-align: center; }
-.eyebrow { display: inline-flex; align-items: center; gap: 7px; color: rgb(98, 127, 83); font-size: 9px; font-weight: 650; letter-spacing: 1.6px; }
-h1 { margin: 9px 0 10px; font-family: var(--heading); font-size: clamp(35px, 4.4vw, 51px); font-weight: 800; line-height: 1.2; letter-spacing: -2.6px; }
-h1 span { color: var(--green); }
-.hero p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.8; }
-.studio { overflow: hidden; background: var(--white); border: 1px solid rgb(223, 229, 216); border-radius: 19px; box-shadow: rgba(37, 58, 28, 0.043) 0 10px 40px; }
-.studio-topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 25px; border-bottom: 1px solid var(--line); }
-.tool-tabs { display: inline-flex; gap: 4px; padding: 4px; border: 1px solid rgb(233, 236, 228); border-radius: 10px; background: rgb(241, 243, 237); }
-.tool-tab { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 17px; border: 1px solid transparent; border-radius: 7px; background: transparent; color: rgb(129, 136, 123); font-size: 11px; font-weight: 550; }
-.tool-tab[aria-selected="true"] { color: rgb(44, 71, 51); background: white; border-color: rgb(225, 230, 219); box-shadow: rgba(40, 58, 29, 0.06) 0 2px 4px; }
-.tool-panel { display: grid; grid-template-columns: 1.08fr 1fr; }
-.editor-pane { padding: 25px 30px; min-width: 0; }
-.pane-heading h2 { margin: 0; font-family: var(--heading); font-size: 19px; font-weight: 750; }
-.pane-heading p { margin: 5px 0 0; color: var(--muted); font-size: 11px; }
-.field-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-label, legend { color: rgb(60, 71, 55); font-size: 11px; font-weight: 600; }
-.input-shell { position: relative; border: 1px solid rgb(223, 228, 217); border-radius: 9px; background: white; }
-.input-shell:focus-within { border-color: rgb(120, 156, 100); box-shadow: rgba(141, 171, 113, 0.13) 0 0 0 3px; }
-.content-input { display: block; width: 100%; border: 0; outline: 0; background: transparent; color: var(--ink); font-size: 12px; }
-textarea.content-input { height: 84px; padding: 12px; resize: vertical; }
-input.content-input { height: 46px; padding: 11px 12px; }
-.example-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-.example-chip { display: inline-flex; align-items: center; gap: 5px; padding: 4px 7px; border: 1px solid rgb(232, 235, 226); border-radius: 5px; background: white; color: rgb(123, 136, 112); font-size: 9px; }
-.example-chip:hover { border-color: rgb(184, 203, 170); color: var(--green); background: rgb(246, 249, 241); }
-.customize-row { display: grid; grid-template-columns: 1.1fr 1fr; gap: 23px; margin-top: 22px; }
-.swatch-row { display: flex; gap: 10px; }
-.color-swatch { display: grid; place-items: center; width: 27px; height: 27px; border: 2px solid white; border-radius: 50%; background: var(--swatch); color: white; box-shadow: rgb(227, 231, 223) 0 0 0 1px; }
-.color-swatch[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--swatch); }
-.swatch-forest { --swatch: #285a43; } .swatch-ink { --swatch: #202923; } .swatch-indigo { --swatch: #514aa6; } .swatch-clay { --swatch: #a04b37; }
-.select-shell select { display: block; width: 100%; padding: 10px 11px; border: 1px solid rgb(223, 228, 217); border-radius: 8px; background: white; color: rgb(102, 118, 91); font-size: 10px; }
-.primary-button { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 46px; margin-top: 23px; border: 1px solid rgb(35, 75, 53); border-radius: 8px; background: linear-gradient(115deg, rgb(44, 91, 64), rgb(36, 77, 54)); color: white; font-weight: 550; font-size: 11px; }
-.preview-pane { display: flex; flex-direction: column; padding: 25px 26px; border-left: 1px solid var(--line); background: rgb(250, 251, 247); }
-.preview-workspace { display: flex; align-items: center; justify-content: center; min-height: 277px; border: 1px solid rgb(225, 231, 215); border-radius: 11px; background-color: rgb(239, 243, 232); }
-.qr-paper, .barcode-paper { width: 224px; padding: 10px; border-radius: 11px; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.06); }
-.barcode-paper { width: 100%; max-width: 320px; }
-.download-button { display: flex; align-items: center; justify-content: center; gap: 7px; width: 100%; min-height: 42px; border: 1px solid rgb(212, 225, 198); border-radius: 8px; background: rgb(229, 237, 220); color: rgb(62, 103, 51); font-weight: 550; font-size: 11px; margin-top: 10px; }
-.benefits { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin: 28px 0; }
-.site-footer { display: flex; justify-content: space-between; padding: 20px 0; border-top: 1px solid rgb(226, 231, 218); color: rgb(161, 170, 148); font-size: 11px; }
-
-/* "How it works" Modal Dialog */
-.info-dialog { width: min(520px, 100% - 32px); max-height: calc(100dvh - 40px); padding: 28px; overflow-y: auto; border: 1px solid rgb(220, 229, 209); border-radius: 18px; background: #ffffff; color: var(--ink); box-shadow: rgba(24, 44, 28, 0.2) 0 25px 90px; }
-.info-dialog::backdrop { background: rgba(33, 49, 32, 0.35); backdrop-filter: blur(4px); }
-.dialog-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-.dialog-eyebrow { color: rgb(124, 149, 104); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; }
-.dialog-close { display: grid; place-items: center; width: 30px; height: 30px; border: 1px solid var(--line); border-radius: 8px; background: #f6f8f2; }
-.help-steps { display: grid; gap: 16px; padding: 0; margin: 20px 0; list-style: none; }
-.help-steps li { display: flex; gap: 12px; }
-.step-number { display: grid; place-items: center; flex-shrink: 0; width: 26px; height: 26px; border-radius: 8px; background: rgb(235, 242, 228); color: rgb(90, 121, 71); font-weight: 700; font-size: 11px; }
-.guide-card-mini { padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: #fafbf8; margin-top: 8px; }
-.guide-card-mini svg { display: block; width: 100%; height: 42px; background: #fff; margin-top: 6px; }
-@media (max-width: 768px) { .tool-panel { grid-template-columns: 1fr; } .benefits { grid-template-columns: 1fr; } }
-</style>
-</head>
-<body>
-  <header class="site-header">
-    <div class="brand">
-      <div class="brand-mark"><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="6" height="6" rx="1"></rect><rect x="15" y="3" width="6" height="6" rx="1"></rect><rect x="3" y="15" width="6" height="6" rx="1"></rect></svg></div>
-      <div class="brand-name">QBar Code Studio</div>
-    </div>
-    <div class="header-actions">
-      <span class="header-note">Private by design</span>
-      <button type="button" class="help-button" onclick="document.getElementById('help-dialog').showModal()">
-        How it works &nearr;
-      </button>
-    </div>
+  <header>
+    <h1 class="brand-title">QBar Code Studio</h1>
+    <p class="tagline">Small Codes. Big Possibilities.</p>
   </header>
 
-  <main class="page-container">
-    <section class="hero">
-      <div class="eyebrow">LESS TYPING. MORE CONNECTING.</div>
-      <h1>Big ideas. <span>Small codes.</span></h1>
-      <p>Make anything scannable. Free QR codes &amp; barcodes, in a few clicks.</p>
-    </section>
-
-    <div class="studio">
-      <div class="studio-topbar">
-        <div class="tool-tabs">
-          <button type="button" class="tool-tab" id="tab-qr" aria-selected="true" onclick="setTab('qr')">QR Code Generator</button>
-          <button type="button" class="tool-tab" id="tab-barcode" aria-selected="false" onclick="setTab('barcode')">Barcode Generator</button>
-        </div>
-        <span style="font-size:11px;color:var(--muted)">Free, without limits</span>
-      </div>
-
-      <!-- QR Panel -->
-      <div class="tool-panel" id="panel-qr">
-        <div class="editor-pane">
-          <div class="pane-heading">
-            <h2>Your content, one scan away.</h2>
-            <p>A link, a few words, or just a string of numbers.</p>
-          </div>
-          <div class="field-header"><label for="qr-input">Your content</label></div>
-          <div class="input-shell">
-            <textarea id="qr-input" class="content-input" placeholder="Enter URL, plain numbers, or text...">https://example.com</textarea>
-          </div>
-          <div class="example-row">
-            <button type="button" class="example-chip" onclick="setQrVal('https://example.com')">Link</button>
-            <button type="button" class="example-chip" onclick="setQrVal('Hello World!')">Text</button>
-            <button type="button" class="example-chip" onclick="setQrVal('1234567890')">Numbers</button>
-          </div>
-          <button type="button" class="primary-button" onclick="makeQr()">Generate QR Code</button>
-        </div>
-        <aside class="preview-pane">
-          <div class="preview-workspace">
-            <div class="qr-paper"><div id="qr-code"></div></div>
-          </div>
-          <button type="button" class="download-button" onclick="dlQr()">Download PNG</button>
-        </aside>
-      </div>
-
-      <!-- Barcode Panel -->
-      <div class="tool-panel" id="panel-barcode" style="display:none">
-        <div class="editor-pane">
-          <div class="pane-heading">
-            <h2>Numbers, made scannable.</h2>
-            <p>Labels, shelves, stock and shipping in a few clicks.</p>
-          </div>
-          <div class="field-header"><label for="bc-input">Barcode content</label></div>
-          <div class="input-shell">
-            <input type="text" id="bc-input" class="content-input" value="QBAR-128" />
-          </div>
-          <div style="margin-top:14px">
-            <label>Barcode format</label>
-            <div class="select-shell" style="margin-top:6px">
-              <select id="bc-format" onchange="autoFormatExample()">
-                <option value="CODE128">CODE128 (Universal)</option>
-                <option value="CODE39">CODE39 (Uppercase/Numbers)</option>
-                <option value="codabar">Codabar (e.g. A12345B)</option>
-                <option value="EAN13">EAN-13 (12 or 13 Digits)</option>
-                <option value="EAN8">EAN-8 (7 or 8 Digits)</option>
-                <option value="UPC">UPC-A (11 or 12 Digits)</option>
-                <option value="UPCE">UPC-E (6 or 8 Digits)</option>
-                <option value="ITF">ITF (Even Digits)</option>
-                <option value="ITF14">ITF-14 (13 or 14 Digits)</option>
-                <option value="pharmacode">Pharmacode (3-131070)</option>
-              </select>
-            </div>
-          </div>
-          <button type="button" class="primary-button" onclick="makeBc()">Generate Barcode</button>
-        </div>
-        <aside class="preview-pane">
-          <div class="preview-workspace">
-            <div class="barcode-paper"><svg id="bc-preview"></svg></div>
-          </div>
-          <button type="button" class="download-button" onclick="dlBc()">Download Barcode (SVG)</button>
-        </aside>
-      </div>
+  <main class="app-card">
+    <div class="tabs">
+      <button class="tab-btn active" id="tabQr" onclick="switchTab('qr')">QR Code</button>
+      <button class="tab-btn" id="tabBc" onclick="switchTab('bc')">Barcode</button>
     </div>
 
-    <!-- Features / Benefits -->
-    <section class="benefits">
-      <article><strong>Your data stays yours</strong><p style="font-size:11px;color:var(--muted)">Everything is generated client-side in your browser.</p></article>
-      <article><strong>Create without limits</strong><p style="font-size:11px;color:var(--muted)">No accounts, watermarks, or daily quotas.</p></article>
-      <article><strong>Crisp at every size</strong><p style="font-size:11px;color:var(--muted)">Ready for labels, posters, packaging, and print.</p></article>
-    </section>
+    <!-- QR Section -->
+    <div id="panelQr">
+      <div class="form-group">
+        <label for="qrType">QR Code Category</label>
+        <select id="qrType" onchange="updateQrPlaceholder()">
+          <option value="url">Website URL (https://example.com)</option>
+          <option value="google-review">Google Review Link</option>
+          <option value="text">Plain Text</option>
+          <option value="wifi">Wi-Fi Network</option>
+          <option value="vcard">vCard Contact</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="qrInput">Content or URL</label>
+        <textarea id="qrInput" placeholder="https://example.com">https://example.com</textarea>
+      </div>
+      <button class="submit-btn" onclick="generateQR()">Generate QR Code</button>
+    </div>
 
-    <footer class="site-footer">
-      <p>&copy; 2026 QBar Code Studio · Small Codes. Big Possibilities.</p>
-      <span>Client-side &amp; Private</span>
-    </footer>
+    <!-- Barcode Section -->
+    <div id="panelBc" style="display: none;">
+      <div class="form-group">
+        <label for="bcType">Barcode Format</label>
+        <select id="bcType" onchange="updateBarcodePlaceholder()">
+          <option value="CODE128">CODE128 (Universal Letters, Digits, Symbols)</option>
+          <option value="CODE39">CODE39 (Uppercase & Digits)</option>
+          <option value="codabar">Codabar (Libraries & Medical)</option>
+          <option value="EAN13">EAN-13 (12 or 13 Digits)</option>
+          <option value="EAN8">EAN-8 (7 or 8 Digits)</option>
+          <option value="UPC">UPC-A (11 or 12 Digits)</option>
+          <option value="UPCE">UPC-E (6 or 8 Digits)</option>
+          <option value="ITF">ITF (Even Number of Digits)</option>
+          <option value="ITF14">ITF-14 (13 or 14 Digits)</option>
+          <option value="pharmacode">Pharmacode (Numeric 3 to 131070)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="bcInput">Barcode Content</label>
+        <input type="text" id="bcInput" value="QBAR-128" />
+      </div>
+      <button class="submit-btn" onclick="generateBarcode()">Generate Barcode</button>
+    </div>
+
+    <!-- Live Preview Display -->
+    <div class="preview-box">
+      <div id="qrTarget"></div>
+      <div id="bcTarget" style="display: none;"><svg id="bcSvg"></svg></div>
+      <button class="download-btn" id="dlBtn" onclick="downloadCode()">Download File</button>
+    </div>
   </main>
 
-  <!-- Help / How it works dialog (Includes barcode format guide) -->
-  <dialog class="info-dialog" id="help-dialog">
-    <div class="dialog-top">
-      <span class="dialog-eyebrow">QBAR CODE STUDIO</span>
-      <button type="button" class="dialog-close" onclick="document.getElementById('help-dialog').close()">&times;</button>
+  <!-- Crawlable, Indexable SEO Section -->
+  <section class="seo-guide" aria-label="Format Guide">
+    <h2>How It Works & Supported Standards</h2>
+    <p>QBar Code Studio generates client-side vector barcodes and scannable QR matrices. Everything runs in your browser without tracking or upload limits.</p>
+    <div class="guide-grid">
+      <div class="guide-item"><strong>CODE128</strong>Alphanumeric encoding for logistics, packaging, and asset management.</div>
+      <div class="guide-item"><strong>EAN-13 & UPC-A</strong>Standard Global Trade Item Numbers (GTIN) for retail points of sale.</div>
+      <div class="guide-item"><strong>QR Codes</strong>Direct redirects for landing pages, Google business reviews, and WiFi logins.</div>
+      <div class="guide-item"><strong>ITF-14</strong>Carton and master packaging barcodes handling distribution scanning.</div>
     </div>
-    <h2 style="font-family:var(--heading);font-size:22px;margin:0 0 8px;">How It Works</h2>
-    <p style="font-size:12px;color:var(--muted);margin-bottom:14px;">From idea to downloadable code in three easy steps:</p>
-    <ol class="help-steps">
-      <li><span class="step-number">1</span><div><strong>Select code &amp; enter data</strong><p style="font-size:11px;color:var(--muted)">Choose QR Code or Barcode and fill in your text, URL or numbers.</p></div></li>
-      <li><span class="step-number">2</span><div><strong>Preview instantly</strong><p style="font-size:11px;color:var(--muted)">Your code generates directly in real time on your machine.</p></div></li>
-      <li><span class="step-number">3</span><div><strong>Download &amp; use</strong><p style="font-size:11px;color:var(--muted)">Save high-resolution PNG or SVG vectors ready for production.</p></div></li>
-    </ol>
-    <h3 style="font-family:var(--heading);font-size:15px;margin:18px 0 6px;">Barcode Formats &amp; Rules</h3>
-    <div class="guide-card-mini"><strong>CODE128</strong><p style="font-size:10px;color:var(--muted)">Universal letters, digits, and punctuation. Sample: <code>QBAR-128</code></p><svg class="dialog-bc" data-fmt="CODE128" data-val="QBAR-128"></svg></div>
-    <div class="guide-card-mini"><strong>CODE39</strong><p style="font-size:10px;color:var(--muted)">Uppercase A-Z and digits. Sample: <code>QBAR-39</code></p><svg class="dialog-bc" data-fmt="CODE39" data-val="QBAR-39"></svg></div>
-    <div class="guide-card-mini"><strong>Codabar</strong><p style="font-size:10px;color:var(--muted)">Libraries &amp; medical tracking. Sample: <code>A12345B</code></p><svg class="dialog-bc" data-fmt="codabar" data-val="A12345B"></svg></div>
-    <div class="guide-card-mini"><strong>EAN-13</strong><p style="font-size:10px;color:var(--muted)">Retail items (12-13 digits). Sample: <code>5901234123457</code></p><svg class="dialog-bc" data-fmt="EAN13" data-val="5901234123457"></svg></div>
-    <div class="guide-card-mini"><strong>EAN-8</strong><p style="font-size:10px;color:var(--muted)">Small packaging (7-8 digits). Sample: <code>96385074</code></p><svg class="dialog-bc" data-fmt="EAN8" data-val="96385074"></svg></div>
-    <div class="guide-card-mini"><strong>UPC-A</strong><p style="font-size:10px;color:var(--muted)">Standard retail (11-12 digits). Sample: <code>036000291452</code></p><svg class="dialog-bc" data-fmt="UPC" data-val="036000291452"></svg></div>
-    <div class="guide-card-mini"><strong>UPC-E</strong><p style="font-size:10px;color:var(--muted)">Compact retail (6-8 digits). Sample: <code>04252614</code></p><svg class="dialog-bc" data-fmt="UPCE" data-val="04252614"></svg></div>
-    <div class="guide-card-mini"><strong>ITF</strong><p style="font-size:10px;color:var(--muted)">Even number of numeric digits. Sample: <code>12345678</code></p><svg class="dialog-bc" data-fmt="ITF" data-val="12345678"></svg></div>
-    <div class="guide-card-mini"><strong>ITF-14</strong><p style="font-size:10px;color:var(--muted)">Outer shipping carton (13-14 digits). Sample: <code>15400141288763</code></p><svg class="dialog-bc" data-fmt="ITF14" data-val="15400141288763"></svg></div>
-    <div class="guide-card-mini"><strong>Pharmacode</strong><p style="font-size:10px;color:var(--muted)">Pharmaceutical code (3-131070). Sample: <code>1234</code></p><svg class="dialog-bc" data-fmt="pharmacode" data-val="1234"></svg></div>
-  </dialog>
+  </section>
+
+  <footer>
+    &copy; 2026 QBar Code Studio · Unlimited & Client-Side
+  </footer>
 
   <script>
-    let qrInst = null;
-    const SAMPLE_VALS = {
-      CODE128: 'QBAR-128', CODE39: 'QBAR-39', codabar: 'A12345B',
-      EAN13: '5901234123457', EAN8: '96385074', UPC: '036000291452',
-      UPCE: '04252614', ITF: '12345678', ITF14: '15400141288763', pharmacode: '1234'
+    let activeTab = 'qr';
+    let qrInstance = null;
+
+    const bcSamples = {
+      CODE128: 'QBAR-128',
+      CODE39: 'QBAR-39',
+      codabar: 'A12345B',
+      EAN13: '5901234123457',
+      EAN8: '96385074',
+      UPC: '036000291452',
+      UPCE: '04252614',
+      ITF: '12345678',
+      ITF14: '15400141288763',
+      pharmacode: '1234'
     };
-    function autoFormatExample() {
-      const fmt = document.getElementById('bc-format').value;
-      if (SAMPLE_VALS[fmt]) document.getElementById('bc-input').value = SAMPLE_VALS[fmt];
-      makeBc();
+
+    function toggleTheme() {
+      const isDark = document.body.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'light' : 'dark';
+      document.body.setAttribute('data-theme', nextTheme);
+      document.getElementById('themeBtn').textContent = isDark ? '🌙 Dark Mode' : '☀️ Light Mode';
     }
-    function setTab(tab) {
-      document.getElementById('panel-qr').style.display = tab === 'qr' ? 'grid' : 'none';
-      document.getElementById('panel-barcode').style.display = tab === 'barcode' ? 'grid' : 'none';
-      document.getElementById('tab-qr').setAttribute('aria-selected', tab === 'qr');
-      document.getElementById('tab-barcode').setAttribute('aria-selected', tab === 'barcode');
-      if (tab === 'barcode') makeBc();
+
+    function switchTab(tab) {
+      activeTab = tab;
+      document.getElementById('panelQr').style.display = tab === 'qr' ? 'block' : 'none';
+      document.getElementById('panelBc').style.display = tab === 'bc' ? 'block' : 'none';
+      document.getElementById('tabQr').classList.toggle('active', tab === 'qr');
+      document.getElementById('tabBc').classList.toggle('active', tab === 'bc');
+
+      document.getElementById('qrTarget').style.display = tab === 'qr' ? 'block' : 'none';
+      document.getElementById('bcTarget').style.display = tab === 'bc' ? 'block' : 'none';
+
+      if (tab === 'bc') generateBarcode();
+      else generateQR();
     }
-    function setQrVal(v) { document.getElementById('qr-input').value = v; makeQr(); }
-    function makeQr() {
-      const val = document.getElementById('qr-input').value.trim() || 'https://example.com';
-      const container = document.getElementById('qr-code');
+
+    function updateQrPlaceholder() {
+      const type = document.getElementById('qrType').value;
+      const input = document.getElementById('qrInput');
+      const hints = {
+        'url': 'https://example.com',
+        'google-review': 'https://g.page/r/your-id/review',
+        'text': 'Plain text message...',
+        'wifi': 'WIFI:S:NetworkName;T:WPA;P:Password;;',
+        'vcard': 'BEGIN:VCARD\\nVERSION:3.0\\nFN:Name\\nTEL:+123456789\\nEND:VCARD'
+      };
+      input.placeholder = hints[type] || 'Enter data...';
+    }
+
+    function updateBarcodePlaceholder() {
+      const fmt = document.getElementById('bcType').value;
+      if (bcSamples[fmt]) document.getElementById('bcInput').value = bcSamples[fmt];
+      generateBarcode();
+    }
+
+    function generateQR() {
+      const text = document.getElementById('qrInput').value.trim();
+      const container = document.getElementById('qrTarget');
+      if (!text) return;
+
       container.innerHTML = '';
-      qrInst = new QRCodeStyling({
-        width: 200, height: 200, type: 'svg', data: val,
-        dotsOptions: { color: '#285a43', type: 'rounded' },
+      qrInstance = new QRCodeStyling({
+        width: 190,
+        height: 190,
+        type: 'svg',
+        data: text,
+        dotsOptions: { color: '#000000', type: 'rounded' },
         backgroundOptions: { color: '#ffffff' }
       });
-      qrInst.append(container);
+      qrInstance.append(container);
+      document.getElementById('dlBtn').style.display = 'block';
     }
-    function dlQr() { if (qrInst) qrInst.download({ name: 'qbar-qr', extension: 'png' }); }
-    function makeBc() {
-      const val = document.getElementById('bc-input').value.trim() || 'QBAR-128';
-      const fmt = document.getElementById('bc-format').value;
+
+    function generateBarcode() {
+      const val = document.getElementById('bcInput').value.trim();
+      const fmt = document.getElementById('bcType').value;
+      if (!val) return;
+
       try {
-        JsBarcode('#bc-preview', val, { format: fmt, lineColor: '#243128', width: 2, height: 60, displayValue: true });
-      } catch (e) {
-        alert('Invalid input for selected format (' + fmt + '). Check character and length requirements.');
+        JsBarcode('#bcSvg', val, {
+          format: fmt,
+          lineColor: '#000000',
+          width: 2,
+          height: 60,
+          displayValue: true
+        });
+        document.getElementById('dlBtn').style.display = 'block';
+      } catch (err) {
+        alert('Invalid input format for ' + fmt + '. Check required lengths or numeric digits.');
       }
     }
-    function dlBc() {
-      const svg = document.getElementById('bc-preview');
-      const xml = new XMLSerializer().serializeToString(svg);
-      const url = URL.createObjectURL(new Blob([xml], { type: 'image/svg+xml;charset=utf-8' }));
-      const a = document.createElement('a'); a.href = url; a.download = 'qbar-code.svg'; a.click();
+
+    function downloadCode() {
+      if (activeTab === 'qr') {
+        if (qrInstance) qrInstance.download({ name: 'qbar-code', extension: 'png' });
+      } else {
+        const svg = document.getElementById('bcSvg');
+        const xml = new XMLSerializer().serializeToString(svg);
+        const blob = new Blob([xml], { type: 'image/svg+xml;charset=utf-8' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'qbar-barcode.svg';
+        link.click();
+      }
     }
+
     window.addEventListener('DOMContentLoaded', () => {
-      makeQr();
-      document.querySelectorAll('.dialog-bc').forEach(svg => {
-        try {
-          JsBarcode(svg, svg.dataset.val, { format: svg.dataset.fmt, width: 1.5, height: 32, margin: 2, displayValue: true, fontSize: 9, lineColor: '#285a43' });
-        } catch (e) {}
-      });
+      generateQR();
     });
-  <\/script>
-</body>
-</html>`,
-
-    /* =========================================================================
-       DARK THEME (Exact cyber-neon styling, bottom guidelines removed, 
-       identical "How it works" popup added, tested code generation)
-       ========================================================================= */
-    dark: `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QBar Code Studio — All-in-One QR Code & Barcode Generator</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="https://cdn.tailwindcss.com"><\/script>
-  <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.5.0/lib/qr-code-styling.js"><\/script>
-  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"><\/script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: { sans: ['Outfit', 'sans-serif'] },
-          colors: { brand: { pink: '#FF2E93', purple: '#FF007A', violet: '#7000FF', cyan: '#00F0FF', yellow: '#FFDE00', dark: '#0B0F19', slate: '#121625' } }
-        }
-      }
-    }
-  <\/script>
-  <style>
-    body {
-      font-family: 'Outfit', sans-serif;
-      background-color: #07090e;
-      background-image: 
-        radial-gradient(at 10% 10%, rgba(255, 46, 147, 0.22) 0px, transparent 50%),
-        radial-gradient(at 90% 15%, rgba(112, 0, 255, 0.25) 0px, transparent 50%),
-        radial-gradient(at 50% 85%, rgba(0, 240, 255, 0.18) 0px, transparent 50%);
-      background-attachment: fixed; min-height: 100vh;
-    }
-    .glass-card { background: rgba(18, 22, 37, 0.82); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.12); }
-    .glass-input { background: rgba(10, 13, 22, 0.65); border: 1.5px solid rgba(255, 255, 255, 0.15); outline: none; }
-    .glass-input:focus { border-color: #00F0FF; box-shadow: 0 0 15px rgba(0, 240, 255, 0.25); }
-    .btn-gradient { background: linear-gradient(135deg, #FF2E93 0%, #7000FF 50%, #00F0FF 100%); transition: all 0.3s ease; }
-    .btn-gradient:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(255, 46, 147, 0.5); }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-    .color-option.selected { border-color: #00F0FF; box-shadow: 0 0 10px rgba(0, 240, 255, 0.6); }
-
-    /* Modal styling for dark mode */
-    .info-dialog-dark { width: min(520px, 100% - 32px); max-height: calc(100dvh - 40px); padding: 28px; overflow-y: auto; border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 20px; background: #0f1423; color: #f1f5f9; box-shadow: 0 25px 90px rgba(0,0,0,0.7); }
-    .info-dialog-dark::backdrop { background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); }
-  </style>
-</head>
-<body class="text-slate-100 flex flex-col justify-between min-h-screen p-4 sm:p-8">
-  <main class="w-full max-w-4xl mx-auto my-auto z-10">
-    <header class="text-center mb-8 relative">
-      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-card text-brand-cyan text-xs font-semibold uppercase mb-3 border border-brand-cyan/30">
-        <i class="fa-solid fa-wand-magic-sparkles text-brand-yellow"></i> All-in-One Generator
-      </div>
-      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight mb-2">
-        <span class="bg-gradient-to-r from-brand-pink via-brand-violet to-brand-cyan bg-clip-text text-transparent">
-          QBar Code Studio
-        </span>
-      </h1>
-      <p class="text-slate-400 text-sm max-w-lg mx-auto">
-        Instant, high-resolution QR codes &amp; barcodes. 100% Free &amp; Unlimited.
-      </p>
-      <!-- "How it works" button in Dark Mode -->
-      <div class="mt-3">
-        <button type="button" onclick="document.getElementById('help-dialog-dark').showModal()" class="text-xs text-brand-cyan hover:underline inline-flex items-center gap-1.5 font-medium">
-          <i class="fa-solid fa-circle-question"></i> How it works &amp; format guide &nearr;
-        </button>
-      </div>
-    </header>
-
-    <div class="glass-card rounded-3xl p-6 sm:p-10 shadow-2xl">
-      <!-- Tabs Switcher -->
-      <div class="flex items-center justify-center p-1.5 bg-slate-950/80 rounded-2xl border border-slate-800 mb-8 max-w-md mx-auto">
-        <button id="tab-btn-qr" onclick="switchTab('qr')" class="flex-1 py-3 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 bg-gradient-to-r from-brand-pink to-brand-violet text-white">
-          <i class="fa-solid fa-qrcode"></i> QR Code
-        </button>
-        <button id="tab-btn-barcode" onclick="switchTab('barcode')" class="flex-1 py-3 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 text-slate-400 hover:text-white">
-          <i class="fa-solid fa-barcode"></i> Barcode
-        </button>
-      </div>
-
-      <!-- QR Tab -->
-      <div id="tab-qr" class="tab-content active">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          <div class="lg:col-span-7 space-y-4">
-            <label class="text-xs font-bold uppercase tracking-wider text-slate-300">Content or URL</label>
-            <input type="text" id="qr-input" value="https://github.com" class="glass-input w-full px-4 py-3 rounded-2xl text-slate-100 text-sm" />
-            
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300">Color Preset</label>
-            <div class="flex gap-2">
-              <button type="button" class="color-option selected px-3 py-1.5 rounded-xl border border-slate-700 bg-slate-900 text-xs" onclick="setQrColor('#0f172a', this)">Classic</button>
-              <button type="button" class="color-option px-3 py-1.5 rounded-xl border border-slate-700 bg-slate-900 text-xs text-brand-pink" onclick="setQrColor('#FF2E93', this)">Neon</button>
-              <button type="button" class="color-option px-3 py-1.5 rounded-xl border border-slate-700 bg-slate-900 text-xs text-brand-violet" onclick="setQrColor('#7000FF', this)">Violet</button>
-              <button type="button" class="color-option px-3 py-1.5 rounded-xl border border-slate-700 bg-slate-900 text-xs text-brand-cyan" onclick="setQrColor('#00F0FF', this)">Cyan</button>
-            </div>
-
-            <button onclick="genQr()" class="btn-gradient w-full py-4 rounded-2xl font-bold text-white text-sm mt-3">Generate QR Code</button>
-          </div>
-          <div class="lg:col-span-5 flex flex-col items-center justify-center p-6 bg-slate-900/90 rounded-3xl border border-slate-800">
-            <div id="qr-target" class="p-4 bg-white rounded-2xl"></div>
-            <button onclick="dlQr()" class="mt-4 w-full py-3 px-4 rounded-xl font-bold text-slate-900 bg-brand-cyan text-sm">Download PNG</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Barcode Tab -->
-      <div id="tab-barcode" class="tab-content">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          <div class="lg:col-span-7 space-y-4">
-            <label class="text-xs font-bold uppercase tracking-wider text-slate-300">Barcode Content</label>
-            <input type="text" id="bc-input" value="QBAR-128" class="glass-input w-full px-4 py-3 rounded-2xl text-slate-100 text-sm" />
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300">Format</label>
-            <select id="bc-fmt" onchange="autoFormatExampleDark()" class="glass-input w-full px-4 py-3 rounded-2xl text-slate-100 text-sm">
-              <option value="CODE128">CODE128 (Universal)</option>
-              <option value="CODE39">CODE39 (Uppercase/Numbers)</option>
-              <option value="codabar">Codabar</option>
-              <option value="EAN13">EAN-13 (12 or 13 Digits)</option>
-              <option value="EAN8">EAN-8 (7 or 8 Digits)</option>
-              <option value="UPC">UPC-A (11 or 12 Digits)</option>
-              <option value="UPCE">UPC-E (6 or 8 Digits)</option>
-              <option value="ITF">ITF (Even Digits)</option>
-              <option value="ITF14">ITF-14 (13 or 14 Digits)</option>
-              <option value="pharmacode">Pharmacode (3-131070)</option>
-            </select>
-            <button onclick="genBc()" class="btn-gradient w-full py-4 rounded-2xl font-bold text-white text-sm">Generate Barcode</button>
-          </div>
-          <div class="lg:col-span-5 flex flex-col items-center justify-center p-6 bg-slate-900/90 rounded-3xl border border-slate-800">
-            <div class="p-4 bg-white rounded-2xl w-full flex justify-center"><svg id="bc-svg"></svg></div>
-            <button onclick="dlBc()" class="mt-4 w-full py-3 px-4 rounded-xl font-bold text-slate-900 bg-brand-cyan text-sm">Download SVG</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- NOTE: The extra barcode guide that was previously at the bottom has been completely REMOVED -->
-
-    <footer class="mt-8 text-center text-xs text-slate-500">
-      &copy; 2026 QBar Code Studio · Fast, Client-Side, &amp; Unlimited
-    </footer>
-  </main>
-
-  <!-- "How it works" Dialog for Dark Theme -->
-  <dialog class="info-dialog-dark" id="help-dialog-dark">
-    <div class="flex items-center justify-between mb-4">
-      <span class="text-xs font-bold tracking-wider text-brand-cyan uppercase">QBar Code Studio</span>
-      <button type="button" class="text-xl text-slate-400 hover:text-white" onclick="document.getElementById('help-dialog-dark').close()">&times;</button>
-    </div>
-    <h2 class="text-xl font-bold text-white mb-2">How It Works</h2>
-    <p class="text-xs text-slate-400 mb-4">Fast 3-step creation directly in your web browser:</p>
-    <div class="space-y-3 text-xs mb-6">
-      <div class="flex gap-2.5 items-start"><span class="px-2 py-0.5 rounded bg-brand-pink/20 text-brand-pink font-bold">1</span><span><strong>Add your data:</strong> Enter links, text, or serial numbers.</span></div>
-      <div class="flex gap-2.5 items-start"><span class="px-2 py-0.5 rounded bg-brand-violet/20 text-brand-cyan font-bold">2</span><span><strong>Pick your format:</strong> Choose QR code or from 10 distinct standard barcodes.</span></div>
-      <div class="flex gap-2.5 items-start"><span class="px-2 py-0.5 rounded bg-brand-yellow/20 text-brand-yellow font-bold">3</span><span><strong>Export:</strong> Download instant print-ready PNG or SVG files.</span></div>
-    </div>
-    <h3 class="text-sm font-bold text-white mb-2 border-t border-slate-800 pt-3">Supported Barcode Formats</h3>
-    <ul class="text-xs text-slate-300 space-y-2 max-h-48 overflow-y-auto pr-1">
-      <li><strong>CODE128:</strong> Universal letters, numbers, symbols (shipping &amp; labels).</li>
-      <li><strong>CODE39:</strong> Capital letters &amp; numbers for assets and warehouses.</li>
-      <li><strong>Codabar:</strong> Specialized tracking in blood banks and libraries.</li>
-      <li><strong>EAN-13 &amp; EAN-8:</strong> Standard retail products worldwide.</li>
-      <li><strong>UPC-A &amp; UPC-E:</strong> North American standard packaging.</li>
-      <li><strong>ITF &amp; ITF-14:</strong> Logistics cartons and shipping master cases.</li>
-      <li><strong>Pharmacode:</strong> Packaging verification numbers (3 to 131070).</li>
-    </ul>
-  </dialog>
-
-  <script>
-    let qr = null;
-    let currentColor = '#0f172a';
-    const SAMPLE_VALS = {
-      CODE128: 'QBAR-128', CODE39: 'QBAR-39', codabar: 'A12345B',
-      EAN13: '5901234123457', EAN8: '96385074', UPC: '036000291452',
-      UPCE: '04252614', ITF: '12345678', ITF14: '15400141288763', pharmacode: '1234'
-    };
-    function autoFormatExampleDark() {
-      const fmt = document.getElementById('bc-fmt').value;
-      if (SAMPLE_VALS[fmt]) document.getElementById('bc-input').value = SAMPLE_VALS[fmt];
-      genBc();
-    }
-    function switchTab(t) {
-      document.getElementById('tab-qr').className = t === 'qr' ? 'tab-content active' : 'tab-content';
-      document.getElementById('tab-barcode').className = t === 'barcode' ? 'tab-content active' : 'tab-content';
-      document.getElementById('tab-btn-qr').className = t === 'qr' ? 'flex-1 py-3 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 bg-gradient-to-r from-brand-pink to-brand-violet text-white' : 'flex-1 py-3 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 text-slate-400 hover:text-white';
-      document.getElementById('tab-btn-barcode').className = t === 'barcode' ? 'flex-1 py-3 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 bg-gradient-to-r from-brand-pink to-brand-violet text-white' : 'flex-1 py-3 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 text-slate-400 hover:text-white';
-      if (t === 'barcode') genBc();
-    }
-    function setQrColor(col, btn) {
-      document.querySelectorAll('.color-option').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-      currentColor = col;
-      genQr();
-    }
-    function genQr() {
-      const val = document.getElementById('qr-input').value.trim() || 'https://github.com';
-      const container = document.getElementById('qr-target');
-      container.innerHTML = '';
-      qr = new QRCodeStyling({
-        width: 200, height: 200, type: 'svg', data: val,
-        dotsOptions: { color: currentColor, type: 'rounded' },
-        backgroundOptions: { color: '#ffffff' }
-      });
-      qr.append(container);
-    }
-    function dlQr() { if (qr) qr.download({ name: 'qbar-qr', extension: 'png' }); }
-    function genBc() {
-      const val = document.getElementById('bc-input').value.trim() || 'QBAR-128';
-      const fmt = document.getElementById('bc-fmt').value;
-      try {
-        JsBarcode('#bc-svg', val, { format: fmt, lineColor: '#0f172a', width: 2, height: 60, displayValue: true });
-      } catch (e) {
-        alert('Invalid input for selected format (' + fmt + '). Check character and length rules.');
-      }
-    }
-    function dlBc() {
-      const svg = document.getElementById('bc-svg');
-      const xml = new XMLSerializer().serializeToString(svg);
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(new Blob([xml], { type: 'image/svg+xml;charset=utf-8' }));
-      a.download = 'qbar-barcode.svg'; a.click();
-    }
-    window.addEventListener('DOMContentLoaded', () => { genQr(); });
-  <\/script>
-</body>
-</html>`
-  };
-
-  var frames = { light: document.getElementById('view-light'), dark: document.getElementById('view-dark') };
-  var btn = document.getElementById('theme-switch'), label = document.getElementById('theme-label');
-  var loaded = {};
-
-  function load(name) {
-    if (!loaded[name]) { frames[name].srcdoc = SOURCES[name]; loaded[name] = true; }
-  }
-
-  function setTheme(name, save) {
-    load(name);
-    frames.light.hidden = name !== 'light';
-    frames.dark.hidden  = name !== 'dark';
-    document.body.setAttribute('data-theme', name);
-    var toDark = name === 'light';
-    btn.setAttribute('aria-checked', String(name === 'dark'));
-    btn.setAttribute('aria-label', toDark ? 'Switch to dark theme' : 'Switch to light theme');
-    label.textContent = toDark ? 'Dark theme' : 'Light theme';
-    if (save) { try { localStorage.setItem('qbar-theme-v2', name); } catch (e) {} }
-  }
-
-  btn.addEventListener('click', function () {
-    setTheme(document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light', true);
-  });
-
-  var start = 'dark';
-  try { if (localStorage.getItem('qbar-theme-v2') === 'light') start = 'light'; } catch (e) {}
-  setTheme(start, false);
-})();
-</script>
+  </script>
 </body>
 </html>
