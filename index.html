@@ -2,1322 +2,490 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>QBar — Original HTML Editor</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>QBar Code Studio</title>
 <style>
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    background: #101625;
-    color: #edf2ff;
-    font: 15px/1.6 system-ui, sans-serif;
+  html, body { margin: 0; height: 100%; overflow: hidden; }
+  .view { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
+  .view[hidden] { display: none; }
+
+  /* Theme switch in the top-right corner */
+  .theme-switch {
+    --sw-bg: #285a43; --sw-fg: #ffffff; --sw-knob: #d4edac;
+    position: fixed; z-index: 2147483000;
+    top: max(16px, env(safe-area-inset-top));
+    right: max(16px, env(safe-area-inset-right));
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 6px 14px 6px 6px; border: 0; border-radius: 999px;
+    background: var(--sw-bg); color: var(--sw-fg);
+    font: 600 13px/1 "Inter", "Outfit", system-ui, -apple-system, "Segoe UI", sans-serif;
+    box-shadow: 0 6px 20px rgba(0,0,0,.28), 0 0 0 1px rgba(255,255,255,.18) inset;
+    cursor: pointer; transition: transform .15s ease;
   }
-  main {
-    max-width: 1000px;
-    margin: 35px auto;
-    padding: 24px;
-  }
-  h1 { margin-top: 0; font-size: 28px; }
-  .card {
-    padding: 24px;
-    background: #182238;
-    border: 1px solid #34435d;
-    border-radius: 16px;
-  }
-  p { color: #c7d2e8; }
-  input, button, a.download {
-    font: inherit;
-  }
-  input[type=file] {
-    display: block;
-    width: 100%;
-    margin: 20px 0;
-    padding: 12px;
-    background: #101625;
-    border-radius: 8px;
-    border: 1px solid #465675;
-  }
-  button, a.download {
-    display: inline-block;
-    padding: 12px 18px;
-    border: 0;
-    border-radius: 9px;
-    background: #bbf0ce;
-    color: #153822;
-    font-weight: 700;
-    cursor: pointer;
-    text-decoration: none;
-    margin: 5px 8px 5px 0;
-  }
-  button:disabled {
-    opacity: .5;
-    cursor: wait;
-  }
-  a.download { background: #b8d9ff; }
-  [hidden] { display: none !important; }
-  pre {
-    white-space: pre-wrap;
-    overflow-wrap: anywhere;
-    padding: 16px;
-    background: #0c1220;
-    border: 1px solid #34435d;
-    border-radius: 10px;
-    min-height: 100px;
-    color: #d5e4fa;
-  }
-  .preview {
-    width: 100%;
-    height: 700px;
-    background: white;
-    border: 1px solid #465675;
-    border-radius: 12px;
-    margin-top: 15px;
-  }
-  .small { font-size: 13px; }
+  .theme-switch:hover { transform: translateY(-1px); }
+  .theme-switch:active { transform: translateY(0) scale(.98); }
+  .theme-switch:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+  body[data-theme="dark"] .theme-switch { --sw-bg: #1c1233; --sw-fg: #ffffff; --sw-knob: #FF2E93; }
+
+  .track { position: relative; width: 44px; height: 26px; border-radius: 999px; background: rgba(255,255,255,.18); flex: none; }
+  .knob { position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--sw-knob); transition: transform .22s ease; }
+  body[data-theme="dark"] .knob { transform: translateX(18px); }
+  @media (prefers-reduced-motion: reduce) { .knob, .theme-switch { transition: none; } }
+  @media (max-width: 480px) { .theme-switch .label { display: none; } .theme-switch { padding-right: 6px; } }
 </style>
-
-<!-- Used only by this editor to make precise JavaScript edits. -->
-<script src="https://cdn.jsdelivr.net/npm/acorn@8.14.0/dist/acorn.js"></script>
 </head>
-<body>
-<main>
-  <div class="card">
-    <h1>Update your original QBar website</h1>
-    <p>
-      Adds all ten barcode formats, input validation, illustrated
-      explanations, examples and a terminology FAQ to both themes.
-      Keeps the original QR-code application and theme switch.
-    </p>
+<body data-theme="dark">
 
-    <label for="source-file">Select your original HTML or TXT file</label>
-    <input
-      id="source-file"
-      type="file"
-      accept=".html,.htm,.txt,text/html,text/plain">
+<iframe id="view-light" class="view" title="QBar Code Studio – light theme" hidden></iframe>
+<iframe id="view-dark" class="view" title="QBar Code Studio – dark theme"></iframe>
 
-    <button id="build" type="button">Build and check updated site</button>
-    <a id="download" class="download" hidden>
-      Download updated website
-    </a>
-
-    <pre id="log" role="status" aria-live="polite">Select your original file to begin.</pre>
-
-    <p class="small">
-      Internet access is needed for the editor's JavaScript parser
-      and any external libraries already used by your original site.
-      The selected file is processed locally.
-    </p>
-  </div>
-
-  <section id="previews" hidden>
-    <h2>Updated theme previews</h2>
-    <p>
-      These are the edited versions of your original theme pages.
-      Check their appearance and downloads before publishing.
-    </p>
-  </section>
-</main>
+<button class="theme-switch" id="theme-switch" type="button" role="switch" aria-checked="true" aria-label="Switch to light theme">
+  <span class="track" aria-hidden="true"><span class="knob"></span></span>
+  <span class="label" id="theme-label">Light theme</span>
+</button>
 
 <script>
-"use strict";
+(function () {
+  var SOURCES = {
+    light: `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f6f7f2">
+<title>QBar Code Studio — Small Codes. Big Possibilities.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.5.0/lib/qr-code-styling.js"><\/script>
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"><\/script>
+<style>
+:root {
+  color-scheme: light;
+  --page: #f6f7f2; --white: #ffffff; --ink: #243128; --muted: #7b8477;
+  --line: #e4e8df; --green: #285a43; --green-dark: #1e4533; --green-soft: #eaf1e4;
+  --lime: #d4edac; --amber: #91651f; --red: #ad453d;
+  --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --heading: "Manrope", var(--font);
+}
+*, ::before, ::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0; min-width: 300px; color: var(--ink);
+  background: radial-gradient(ellipse at 50% 0%, rgba(218, 230, 202, .35), transparent 48%), var(--page);
+  font-family: var(--font); font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased;
+}
+button, input, textarea, select { font: inherit; -webkit-tap-highlight-color: transparent; }
+button { cursor: pointer; color: inherit; }
+button:disabled { cursor: not-allowed; }
+a { color: inherit; text-decoration: none; }
+button:focus-visible, a:focus-visible, select:focus-visible { outline: rgb(157, 187, 131) solid 3px; outline-offset: 4px; }
+::selection { background: rgb(217, 235, 200); color: rgb(33, 66, 48); }
+.icon { display: inline-block; width: 18px; height: 18px; flex-shrink: 0; fill: none; stroke: currentcolor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; vertical-align: middle; }
+.svg-definitions { position: absolute; width: 0; height: 0; overflow: hidden; }
+.skip-link { position: fixed; top: 12px; left: 12px; z-index: 100; padding: 10px 16px; border-radius: 8px; background: var(--green); color: white; transform: translateY(-160%); }
+.skip-link:focus { transform: translateY(0); }
+.site-header { width: calc(100% - 64px); max-width: 1160px; min-height: 84px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 1px solid rgba(219, 226, 210, 0.8); }
+.brand { display: inline-flex; align-items: center; gap: 10px; }
+.brand-mark { display: grid; place-items: center; width: 37px; height: 37px; border-radius: 11px; color: var(--lime); background: var(--green); box-shadow: rgba(255, 255, 255, 0.1) 0 0 0 1px inset; }
+.brand-name { font-family: var(--heading); font-size: 21px; font-weight: 800; letter-spacing: -0.9px; }
+.brand-studio { margin-left: 6px; padding: 4px 5px; border-radius: 4px; background: rgb(232, 237, 223); color: rgb(101, 117, 90); font-size: 8px; font-weight: 650; letter-spacing: 1.2px; vertical-align: 3px; }
+.header-actions { display: flex; align-items: center; gap: 27px; }
+.header-note { display: flex; align-items: center; gap: 7px; color: rgb(115, 128, 105); font-size: 11px; }
+.help-button { display: inline-flex; align-items: center; gap: 7px; padding: 8px 0; border: 0; background: none; font-size: 11px; font-weight: 550; }
+.page-container { width: calc(100% - 48px); max-width: 1080px; margin: 0 auto; }
+.hero { padding: 31px 12px; text-align: center; }
+.eyebrow { display: inline-flex; align-items: center; gap: 7px; color: rgb(98, 127, 83); font-size: 9px; font-weight: 650; letter-spacing: 1.6px; }
+h1 { margin: 9px 0 10px; font-family: var(--heading); font-size: clamp(35px, 4.4vw, 51px); font-weight: 800; line-height: 1.2; letter-spacing: -2.6px; }
+h1 span { color: var(--green); }
+.hero p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.8; }
+.studio { overflow: hidden; background: var(--white); border: 1px solid rgb(223, 229, 216); border-radius: 19px; box-shadow: rgba(37, 58, 28, 0.043) 0 10px 40px, rgba(37, 58, 28, 0.016) 0 2px 5px; }
+.studio-topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 25px; border-bottom: 1px solid var(--line); }
+.tool-tabs { display: inline-flex; gap: 4px; padding: 4px; border: 1px solid rgb(233, 236, 228); border-radius: 10px; background: rgb(241, 243, 237); }
+.tool-tab { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 17px; border: 1px solid transparent; border-radius: 7px; background: transparent; color: rgb(129, 136, 123); font-size: 11px; font-weight: 550; }
+.tool-tab[aria-selected="true"] { color: rgb(44, 71, 51); background: white; border-color: rgb(225, 230, 219); box-shadow: rgba(40, 58, 29, 0.06) 0 2px 4px; }
+.tool-panel { display: grid; grid-template-columns: 1.08fr 1fr; }
+.editor-pane { padding: 25px 30px; min-width: 0; }
+.pane-heading h2 { margin: 0; font-family: var(--heading); font-size: 19px; font-weight: 750; }
+.pane-heading p { margin: 5px 0 0; color: var(--muted); font-size: 11px; }
+.field-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+label, legend { color: rgb(60, 71, 55); font-size: 11px; font-weight: 600; }
+.input-shell { position: relative; border: 1px solid rgb(223, 228, 217); border-radius: 9px; background: white; }
+.input-shell:focus-within { border-color: rgb(120, 156, 100); box-shadow: rgba(141, 171, 113, 0.13) 0 0 0 3px; }
+.content-input { display: block; width: 100%; border: 0; outline: 0; background: transparent; color: var(--ink); font-size: 12px; }
+textarea.content-input { height: 84px; padding: 12px; resize: vertical; }
+input.content-input { height: 46px; padding: 11px 12px; }
+.example-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.example-chip { display: inline-flex; align-items: center; gap: 5px; padding: 4px 7px; border: 1px solid rgb(232, 235, 226); border-radius: 5px; background: white; color: rgb(123, 136, 112); font-size: 9px; }
+.customize-row { display: grid; grid-template-columns: 1.1fr 1fr; gap: 23px; margin-top: 22px; }
+.swatch-row { display: flex; gap: 10px; }
+.color-swatch { display: grid; place-items: center; width: 27px; height: 27px; border: 2px solid white; border-radius: 50%; background: var(--swatch); color: white; box-shadow: rgb(227, 231, 223) 0 0 0 1px; }
+.color-swatch[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--swatch); }
+.color-swatch .icon { width: 12px; height: 12px; opacity: 0; }
+.color-swatch[aria-pressed="true"] .icon { opacity: 1; }
+.swatch-forest { --swatch: #285a43; } .swatch-ink { --swatch: #202923; } .swatch-indigo { --swatch: #514aa6; } .swatch-clay { --swatch: #a04b37; }
+.select-shell select { display: block; width: 100%; padding: 10px 11px; border: 1px solid rgb(223, 228, 217); border-radius: 8px; background: white; color: rgb(102, 118, 91); font-size: 10px; }
+.primary-button { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 46px; margin-top: 23px; border: 1px solid rgb(35, 75, 53); border-radius: 8px; background: linear-gradient(115deg, rgb(44, 91, 64), rgb(36, 77, 54)); color: white; font-weight: 550; font-size: 11px; }
+.preview-pane { display: flex; flex-direction: column; padding: 25px 26px; border-left: 1px solid var(--line); background: rgb(250, 251, 247); }
+.preview-workspace { display: flex; align-items: center; justify-content: center; min-height: 277px; border: 1px solid rgb(225, 231, 215); border-radius: 11px; background-color: rgb(239, 243, 232); }
+.qr-paper, .barcode-paper { width: 224px; padding: 10px; border-radius: 11px; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.06); }
+.barcode-paper { width: 100%; max-width: 320px; }
+.download-button { display: flex; align-items: center; justify-content: center; gap: 7px; width: 100%; min-height: 42px; border: 1px solid rgb(212, 225, 198); border-radius: 8px; background: rgb(229, 237, 220); color: rgb(62, 103, 51); font-weight: 550; font-size: 11px; margin-top: 10px; }
+.guide-section { margin-top: 40px; padding: 32px 28px; background: var(--white); border: 1px solid rgb(223, 229, 216); border-radius: 20px; box-shadow: rgba(37, 58, 28, 0.04) 0 8px 30px; }
+.guide-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 20px; }
+.guide-card { border: 1px solid var(--line); border-radius: 12px; padding: 16px; background: rgb(250, 251, 248); }
+.guide-card strong { display: block; font-size: 13px; color: var(--ink); margin-bottom: 4px; }
+.guide-card p { font-size: 11px; color: var(--muted); margin: 0 0 10px; }
+.guide-card svg { display: block; width: 100%; height: 50px; background: #ffffff; border-radius: 6px; padding: 4px; }
+.benefits { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin: 28px 0; }
+.site-footer { display: flex; justify-content: space-between; padding: 20px 0; border-top: 1px solid rgb(226, 231, 218); color: rgb(161, 170, 148); font-size: 11px; }
+@media (max-width: 768px) { .tool-panel { grid-template-columns: 1fr; } .benefits { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand">
+      <div class="brand-mark"><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="6" height="6" rx="1"></rect><rect x="15" y="3" width="6" height="6" rx="1"></rect><rect x="3" y="15" width="6" height="6" rx="1"></rect></svg></div>
+      <div class="brand-name">QBar Code<span class="brand-studio">STUDIO</span></div>
+    </div>
+    <div class="header-actions">
+      <span class="header-note">Private by design</span>
+    </div>
+  </header>
 
-/*
- * id, display name, dropdown description, example,
- * definition, input rules, example explanation
- */
-const FORMATS = [
-  [
-    "CODE128", "CODE128", "letters, numbers, symbols",
-    "QBar-2026/ABC",
-    "Code 128 is a compact linear barcode used for inventory, shipping and general-purpose identifiers.",
-    "This text field accepts printable ASCII: English uppercase and lowercase letters, digits, spaces and standard keyboard symbols. Accented letters and emoji are not supported.",
-    "QBar-2026/ABC could identify an internal stock item. The encoder adds the Code 128 checksum automatically."
-  ],
-  [
-    "CODE39", "CODE39", "uppercase letters and numbers",
-    "QBAR-2026",
-    "Code 39 is used for asset labels, industrial identifiers and inventory.",
-    "Use uppercase A–Z, digits 0–9, spaces and the symbols - . $ / + %. Lowercase letters are rejected. Do not add asterisks as start or stop characters.",
-    "QBAR-2026 could identify a piece of equipment. CODE39 also supports the limited set of symbols listed above."
-  ],
-  [
-    "codabar", "Codabar", "libraries, blood banks",
-    "A123456B",
-    "Codabar is an older linear barcode used by some library, laboratory and blood-bank systems.",
-    "Use digits and - $ : / . +. Optional start and stop characters are A, B, C or D. Supply both boundary characters or neither; the encoder uses A boundaries when omitted.",
-    "In A123456B, A is the start character, 123456 is the data and B is the stop character. This is a teaching example, not a certified medical label."
-  ],
-  [
-    "EAN13", "EAN-13", "standard retail, 12 or 13 digits",
-    "5901234123457",
-    "EAN means European Article Number. EAN-13 is used internationally for retail products and typically carries a GTIN-13 identifier.",
-    "Enter 12 digits to calculate the final check digit automatically, or 13 digits with a valid check digit.",
-    "5901234123457 has data 590123412345 and final check digit 7. A GS1 prefix does not establish the product's country of manufacture."
-  ],
-  [
-    "EAN8", "EAN-8", "small retail items, 7 or 8 digits",
-    "96385074",
-    "EAN-8 is a shorter retail barcode for products with limited label space. It carries a GTIN-8 identifier.",
-    "Enter 7 digits to calculate the check digit automatically, or 8 digits with a valid check digit. Do not truncate an EAN-13 identifier to make an EAN-8 identifier.",
-    "In demonstration value 96385074, the first seven digits are 9638507 and the check digit is 4."
-  ],
-  [
-    "UPC", "UPC-A", "North American retail, 11 or 12 digits",
-    "036000291452",
-    "UPC means Universal Product Code. UPC-A is widely used at North American retail checkouts and carries a GTIN-12 identifier.",
-    "Enter 11 digits to calculate the check digit automatically, or 12 digits with a valid check digit. Preserve leading zeros.",
-    "036000291452 ends in check digit 2. The first zero is part of the identifier and must not be removed."
-  ],
-  [
-    "UPCE", "UPC-E", "compact retail, 6 or 8 digits",
-    "04252614",
-    "UPC-E is a compact, zero-suppressed representation of eligible UPC-A identifiers, useful on small retail packages.",
-    "Enter six compressed data digits, which this encoder interprets with number system 0 and an automatically calculated check digit. Alternatively, enter eight digits: number system 0 or 1, six compressed digits and a valid check digit. Seven-digit input is not accepted here.",
-    "04252614 contains number system 0, compressed data 425261 and check digit 4. It expands to UPC-A 042100005264. Six-digit input 425261 represents the same example."
-  ],
-  [
-    "ITF", "ITF", "Interleaved 2 of 5, even number of digits",
-    "12345678",
-    "ITF means Interleaved 2 of 5. It encodes numeric digits in pairs using both bars and spaces.",
-    "Enter a non-empty even number of digits, with at least two digits. Generic ITF does not add a check digit automatically in this generator.",
-    "12345678 is encoded as pairs 12, 34, 56 and 78. Value 1234567 is invalid because it has an odd number of digits."
-  ],
-  [
-    "ITF14", "ITF-14", "cartons and master packaging, 14 digits",
-    "10012345000017",
-    "ITF-14 uses Interleaved 2 of 5 to carry a 14-digit GTIN for cartons, cases and outer packaging.",
-    "This site requires exactly 14 digits, including a valid final GS1 check digit.",
-    "10012345000017 is a checksum-valid demonstration value ending in 7. Production carton labels additionally require the appropriate dimensions, quiet zones, bearer bars and print verification."
-  ],
-  [
-    "PHARMACODE", "Pharmacode",
-    "pharmaceutical packaging, numbers 3 to 131070",
-    "1234",
-    "Pharmacode, also called Pharmaceutical Binary Code, is used in pharmaceutical packaging-control systems.",
-    "Enter a whole-number value from 3 through 131070. It represents a number, rather than arbitrary text or a retail product identifier.",
-    "1234 is encoded using narrow and wide bars. Leading zeros do not make a different numeric value. Reading direction and scanner configuration matter."
-  ]
-].map(function (r) {
-  return {
-    id: r[0],
-    name: r[1],
-    short: r[2],
-    example: r[3],
-    definition: r[4],
-    rules: r[5],
-    explanation: r[6]
-  };
-});
+  <main class="page-container">
+    <section class="hero">
+      <div class="eyebrow">LESS TYPING. MORE CONNECTING.</div>
+      <h1>Big ideas. <span>Small codes.</span></h1>
+      <p>Make anything scannable. Free QR codes & barcodes, in a few clicks.</p>
+    </section>
 
-/*
- * This function is embedded into each edited theme.
- * It does not depend on this editor or on Acorn.
- */
-function barcodeRuntime(formats) {
-  "use strict";
+    <div class="studio">
+      <div class="studio-topbar">
+        <div class="tool-tabs">
+          <button type="button" class="tool-tab" id="tab-qr" aria-selected="true" onclick="setTab('qr')">QR Code Generator</button>
+          <button type="button" class="tool-tab" id="tab-barcode" aria-selected="false" onclick="setTab('barcode')">Barcode Generator</button>
+        </div>
+        <span style="font-size:11px;color:var(--muted)">Free, without limits</span>
+      </div>
 
-  const map = Object.create(null);
-  const samples = Object.create(null);
-  const hints = Object.create(null);
+      <!-- QR Panel -->
+      <div class="tool-panel" id="panel-qr">
+        <div class="editor-pane">
+          <div class="pane-heading">
+            <h2>Your content, one scan away.</h2>
+            <p>A link, a few words, or just a string of numbers.</p>
+          </div>
+          <div class="field-header"><label for="qr-input">Your content</label></div>
+          <div class="input-shell">
+            <textarea id="qr-input" class="content-input" placeholder="Enter URL, plain numbers, or text...">https://example.com</textarea>
+          </div>
+          <button type="button" class="primary-button" onclick="makeQr()">Generate QR Code</button>
+        </div>
+        <aside class="preview-pane">
+          <div class="preview-workspace">
+            <div class="qr-paper"><div id="qr-code"></div></div>
+          </div>
+          <button type="button" class="download-button" id="qr-dl-btn" onclick="dlQr()">Download PNG</button>
+        </aside>
+      </div>
 
-  formats.forEach(function (f) {
-    map[f.id] = f;
-    samples[f.id] = f.example;
-    hints[f.id] = f.rules + " Example: " + f.example + ".";
-  });
+      <!-- Barcode Panel -->
+      <div class="tool-panel" id="panel-barcode" style="display:none">
+        <div class="editor-pane">
+          <div class="pane-heading">
+            <h2>Numbers, made scannable.</h2>
+            <p>Labels, shelves, stock and shipping in a few clicks.</p>
+          </div>
+          <div class="field-header"><label for="bc-input">Barcode content</label></div>
+          <div class="input-shell">
+            <input type="text" id="bc-input" class="content-input" value="QBAR-128" />
+          </div>
+          <div style="margin-top:14px">
+            <label>Barcode format</label>
+            <div class="select-shell" style="margin-top:6px">
+              <select id="bc-format" onchange="makeBc()">
+                <option value="CODE128">CODE128 (Universal)</option>
+                <option value="CODE39">CODE39 (Uppercase/Numbers)</option>
+                <option value="codabar">Codabar</option>
+                <option value="EAN13">EAN-13</option>
+                <option value="EAN8">EAN-8</option>
+                <option value="UPC">UPC-A</option>
+                <option value="UPCE">UPC-E</option>
+                <option value="ITF">ITF</option>
+                <option value="ITF14">ITF-14</option>
+                <option value="pharmacode">Pharmacode</option>
+              </select>
+            </div>
+          </div>
+          <button type="button" class="primary-button" onclick="makeBc()">Generate Barcode</button>
+        </div>
+        <aside class="preview-pane">
+          <div class="preview-workspace">
+            <div class="barcode-paper"><svg id="bc-preview"></svg></div>
+          </div>
+          <button type="button" class="download-button" onclick="dlBc()">Download Barcode</button>
+        </aside>
+      </div>
+    </div>
 
-  function validate(value, id) {
-    const text = String(value);
-    const f = map[id];
+    <!-- Barcode Guide Section Added to Light Mode -->
+    <section class="guide-section" aria-labelledby="guide-title">
+      <h2 id="guide-title" style="font-family:var(--heading);font-size:22px;font-weight:800;margin:0 0 6px">Barcode formats: simple guide &amp; examples</h2>
+      <p style="color:var(--muted);font-size:12px;margin:0 0 18px">Each format has different character and length rules. The samples below illustrate each standard layout.</p>
+      <div class="guide-grid">
+        <div class="guide-card"><strong>CODE128</strong><p>Letters, numbers and standard keyboard symbols. Perfect for inventory. Example: <code>QBAR-128</code></p><svg class="bc-guide-img" data-format="CODE128" data-value="QBAR-128"></svg></div>
+        <div class="guide-card"><strong>CODE39</strong><p>Uppercase A–Z, numbers, and symbols (- . $ / + %). Asset tags. Example: <code>QBAR-39</code></p><svg class="bc-guide-img" data-format="CODE39" data-value="QBAR-39"></svg></div>
+        <div class="guide-card"><strong>Codabar</strong><p>Common in libraries and blood bank tracking. Example: <code>A12345B</code></p><svg class="bc-guide-img" data-format="codabar" data-value="A12345B"></svg></div>
+        <div class="guide-card"><strong>EAN-13</strong><p>Standard 13-digit global retail product barcode. Example: <code>5901234123457</code></p><svg class="bc-guide-img" data-format="EAN13" data-value="5901234123457"></svg></div>
+        <div class="guide-card"><strong>EAN-8</strong><p>Short 8-digit retail barcode for small packages. Example: <code>96385074</code></p><svg class="bc-guide-img" data-format="EAN8" data-value="96385074"></svg></div>
+        <div class="guide-card"><strong>UPC-A</strong><p>Standard 12-digit North American retail packaging barcode. Example: <code>036000291452</code></p><svg class="bc-guide-img" data-format="UPC" data-value="036000291452"></svg></div>
+        <div class="guide-card"><strong>UPC-E</strong><p>Compact 6-8 digit zero-suppressed retail barcode. Example: <code>04252614</code></p><svg class="bc-guide-img" data-format="UPCE" data-value="04252614"></svg></div>
+        <div class="guide-card"><strong>ITF (Interleaved 2 of 5)</strong><p>Even number of numeric digits for shipping & logistics. Example: <code>12345678</code></p><svg class="bc-guide-img" data-format="ITF" data-value="12345678"></svg></div>
+        <div class="guide-card"><strong>ITF-14</strong><p>14-digit master shipping containers and cartons. Example: <code>15400141288763</code></p><svg class="bc-guide-img" data-format="ITF14" data-value="15400141288763"></svg></div>
+        <div class="guide-card"><strong>Pharmacode</strong><p>Pharmaceutical packaging code (values 3 to 131070). Example: <code>1234</code></p><svg class="bc-guide-img" data-format="pharmacode" data-value="1234"></svg></div>
+      </div>
+    </section>
 
-    if (!f) return "Choose a supported barcode format.";
-    if (!text) return "Enter barcode content first.";
+    <footer class="site-footer">
+      <p>© <span id="yr">2026</span> QBar Code Studio · Small Codes. Big Possibilities.</p>
+      <span>Client-side &amp; Private</span>
+    </footer>
+  </main>
 
-    switch (id) {
-      case "CODE128":
-        if (!/^[\x20-\x7E]+$/.test(text)) {
-          return "CODE128 requires printable ASCII letters, numbers, spaces or symbols.";
-        }
-        break;
-
-      case "CODE39":
-        if (!/^[0-9A-Z .$/+%-]+$/.test(text)) {
-          return "CODE39 requires uppercase A–Z, digits, spaces or - . $ / + %.";
-        }
-        break;
-
-      case "codabar":
-        if (!/^(?:[A-D][0-9$:/+.\-]+[A-D]|[0-9$:/+.\-]+)$/.test(text)) {
-          return "Codabar requires digits or - $ : / . +, optionally enclosed by A–D start and stop characters.";
-        }
-        break;
-
-      case "EAN13":
-        if (!/^\d{12,13}$/.test(text)) {
-          return "EAN-13 requires 12 or 13 digits.";
-        }
-        break;
-
-      case "EAN8":
-        if (!/^\d{7,8}$/.test(text)) {
-          return "EAN-8 requires 7 or 8 digits.";
-        }
-        break;
-
-      case "UPC":
-        if (!/^\d{11,12}$/.test(text)) {
-          return "UPC-A requires 11 or 12 digits. Preserve leading zeros.";
-        }
-        break;
-
-      case "UPCE":
-        if (!/^(?:\d{6}|[01]\d{7})$/.test(text)) {
-          return "UPC-E requires six compressed digits, or eight digits starting with 0 or 1.";
-        }
-        break;
-
-      case "ITF":
-        if (!/^(?:\d{2})+$/.test(text)) {
-          return "ITF requires an even number of digits, with at least two digits.";
-        }
-        break;
-
-      case "ITF14":
-        if (!/^\d{14}$/.test(text)) {
-          return "ITF-14 requires exactly 14 digits, including the check digit.";
-        }
-        break;
-
-      case "PHARMACODE":
-        if (!/^\d+$/.test(text) ||
-            Number(text) < 3 ||
-            Number(text) > 131070) {
-          return "Pharmacode requires a whole number from 3 to 131070.";
-        }
-        break;
+  <script>
+    let qrInst = null;
+    function setTab(tab) {
+      document.getElementById('panel-qr').style.display = tab === 'qr' ? 'grid' : 'none';
+      document.getElementById('panel-barcode').style.display = tab === 'barcode' ? 'grid' : 'none';
+      document.getElementById('tab-qr').setAttribute('aria-selected', tab === 'qr');
+      document.getElementById('tab-barcode').setAttribute('aria-selected', tab === 'barcode');
+      if (tab === 'barcode') makeBc();
     }
-
-    if (typeof window.JsBarcode !== "function") {
-      return "The barcode engine has not loaded. Check your connection and reload.";
-    }
-
-    try {
-      const test = document.createElementNS(
-        "http://www.w3.org/2000/svg", "svg"
-      );
-
-      window.JsBarcode(test, text, {
-        format: id,
-        displayValue: false,
-        width: 2,
-        height: 40,
-        margin: 20
+    function makeQr() {
+      const val = document.getElementById('qr-input').value.trim() || 'https://example.com';
+      const container = document.getElementById('qr-code');
+      container.innerHTML = '';
+      qrInst = new QRCodeStyling({
+        width: 200, height: 200, type: 'svg', data: val,
+        dotsOptions: { color: '#285a43', type: 'rounded' },
+        backgroundOptions: { color: '#ffffff' }
       });
-
-      return "";
-    } catch (error) {
-      if (/^(EAN13|EAN8|UPC|UPCE|ITF14)$/.test(id)) {
-        return f.name +
-          ": the check digit or identifier is invalid. Check your product records.";
-      }
-
-      return "This value cannot be encoded as " + f.name + ".";
+      qrInst.append(container);
     }
-  }
-
-  window.QBarRepair = {
-    formats: formats,
-    map: map,
-    samples: samples,
-    hints: hints,
-    validate: validate,
-    installed: false
-  };
-
-  function install() {
-    const select = document.getElementById("barcode-format") ||
-                   document.getElementById("barcode-format-select");
-    const input = document.getElementById("barcode-input");
-    const generate = document.getElementById("barcode-generate") ||
-                     document.getElementById("barcode-generate-btn");
-
-    if (!select || !input || !generate) {
-      throw new Error("Barcode controls could not be located.");
-    }
-
-    const dark = select.id === "barcode-format-select";
-
-    function element(tag, text, cls) {
-      const el = document.createElement(tag);
-      if (text !== undefined) el.textContent = text;
-      if (cls) el.className = cls;
-      return el;
-    }
-
-    function paragraph(parent, label, text) {
-      const p = element("p");
-      if (label) p.appendChild(element("strong", label + " "));
-      p.appendChild(document.createTextNode(text));
-      parent.appendChild(p);
-    }
-
-    function useButton(f) {
-      const b = element("button", "Use " + f.name + " example");
-      b.type = "button";
-      b.dataset.qbarUse = f.id;
-      return b;
-    }
-
-    const style = element("style");
-    style.textContent = `
-      .qb-guide,.qb-inline {
-        --qb-bg:#ffffff;
-        --qb-soft:#f1f5ed;
-        --qb-text:#243128;
-        --qb-muted:#59665d;
-        --qb-line:#dce4d7;
-        color:var(--qb-text);
-        font:14px/1.7 system-ui,sans-serif;
-      }
-      .qb-guide[data-dark=true],.qb-inline[data-dark=true] {
-        --qb-bg:#121b2c;
-        --qb-soft:#1c2940;
-        --qb-text:#eef3ff;
-        --qb-muted:#c0cce1;
-        --qb-line:#3b4a65;
-      }
-      .qb-guide {
-        width:calc(100% - 32px);
-        max-width:1080px;
-        box-sizing:border-box;
-        margin:30px auto;
-        padding:24px;
-        border:1px solid var(--qb-line);
-        border-radius:16px;
-        background:var(--qb-bg);
-      }
-      .qb-guide h2 {
-        font-size:25px;
-        line-height:1.35;
-        margin:0 0 12px;
-        letter-spacing:normal;
-      }
-      .qb-guide h3 {font-size:18px;margin:22px 0 12px}
-      .qb-guide p {margin:8px 0;color:var(--qb-muted)}
-      .qb-guide strong {color:var(--qb-text)}
-      .qb-guide details {
-        margin:12px 0;
-        padding:0;
-        border:1px solid var(--qb-line);
-        border-radius:10px;
-        background:var(--qb-soft);
-      }
-      .qb-guide summary {
-        padding:14px;
-        font-size:14px;
-        font-weight:700;
-        color:var(--qb-text);
-        cursor:pointer;
-      }
-      .qb-content {padding:0 16px 18px}
-      .qb-guide .qb-example {
-        margin:15px 0;
-        padding:18px;
-        background:#ffffff;
-        color:#18231c;
-        border-radius:10px;
-        overflow:auto;
-      }
-      .qb-example svg {
-        display:block;
-        margin:auto;
-        max-width:100%;
-        height:auto;
-        background:#ffffff;
-      }
-      .qb-example figcaption {
-        text-align:center;
-        font-size:12px;
-        margin-top:10px;
-        color:#465348;
-      }
-      .qb-guide button,.qb-inline button {
-        border:1px solid var(--qb-line);
-        border-radius:8px;
-        padding:8px 12px;
-        background:var(--qb-soft);
-        color:var(--qb-text);
-        font:inherit;
-        cursor:pointer;
-      }
-      .qb-inline {
-        margin:12px 0;
-        padding:12px;
-        background:var(--qb-soft);
-        border:1px solid var(--qb-line);
-        border-radius:10px;
-      }
-      .qb-inline p {margin:0 0 9px}
-      .qb-notice {
-        padding:14px;
-        border-left:4px solid #c49b3a;
-        background:var(--qb-soft);
-      }
-      .qb-guide-link {margin-left:8px}
-      .info-dialog .qb-guide {
-        width:100%;
-        margin:20px 0;
-        padding:14px;
-      }
-      @media(max-width:600px) {
-        .qb-guide {padding:16px}
-        .qb-guide h2 {font-size:22px}
-      }
-    `;
-    document.head.appendChild(style);
-
-    const inline = element("div", undefined, "qb-inline");
-    inline.dataset.dark = String(dark);
-    inline.setAttribute("aria-live", "polite");
-    select.parentElement.insertAdjacentElement("afterend", inline);
-
-    const guide = element("section", undefined, "qb-guide");
-    guide.id = "qbar-barcode-guide";
-    guide.dataset.dark = String(dark);
-    guide.setAttribute("aria-label", "Barcode guide and FAQ");
-
-    guide.appendChild(
-      element("h2", "How barcodes work: formats, examples and FAQ")
-    );
-
-    paragraph(
-      guide, "",
-      "Choose a format, enter compatible content, generate the barcode and download PNG or SVG. Each image below is a real barcode generated from the displayed example value."
-    );
-
-    guide.appendChild(element(
-      "p",
-      "Teaching examples are not assigned product identifiers. Creating an image does not allocate a GTIN, register a product or certify a label for retail, logistics or medical use. Use your properly assigned identifiers and the receiving system's requirements.",
-      "qb-notice"
-    ));
-
-    formats.forEach(function (f, index) {
-      const details = element("details");
-      details.open = index === 0;
-      details.appendChild(
-        element("summary", (index + 1) + ". " + f.name)
-      );
-
-      const body = element("div", undefined, "qb-content");
-      paragraph(body, "Definition:", f.definition);
-      paragraph(body, "Accepted input:", f.rules);
-      paragraph(body, "Example:", f.example);
-      paragraph(body, "Example explained:", f.explanation);
-
-      const figure = element("figure", undefined, "qb-example");
-      const svg = document.createElementNS(
-        "http://www.w3.org/2000/svg", "svg"
-      );
-
-      svg.setAttribute("role", "img");
-      svg.setAttribute(
-        "aria-label",
-        f.name + " barcode encoding " + f.example
-      );
-
-      const problem = validate(f.example, f.id);
-
-      if (problem) {
-        figure.appendChild(element(
-          "p", "Example image unavailable: " + problem
-        ));
-      } else {
-        window.JsBarcode(svg, f.example, {
-          format: f.id,
-          lineColor: "#111111",
-          background: "#ffffff",
-          width: 2,
-          height: 72,
-          displayValue: true,
-          font: "monospace",
-          fontSize: 14,
-          textMargin: 6,
-          margin: 20
-        });
-
-        const width = parseFloat(svg.getAttribute("width"));
-        const height = parseFloat(svg.getAttribute("height"));
-
-        if (width && height) {
-          svg.setAttribute("viewBox", "0 0 " + width + " " + height);
-          svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
-        }
-
-        figure.appendChild(svg);
-      }
-
-      figure.appendChild(
-        element("figcaption", f.name + " — " + f.example)
-      );
-      body.appendChild(figure);
-      body.appendChild(useButton(f));
-      details.appendChild(body);
-      guide.appendChild(details);
-    });
-
-    guide.appendChild(element("h3", "Barcode terminology"));
-
-    const glossary = [
-      [
-        "Barcode and scanner",
-        "A barcode represents data in a machine-readable pattern. A scanner reads the pattern and returns its encoded value. For example, a barcode containing BOX123 returns that identifier; connected software decides which item it represents."
-      ],
-      [
-        "Symbology or format",
-        "The encoding rules that turn data into bars and spaces. CODE128, CODE39 and EAN-13 are different symbologies. Content valid in one format may be invalid in another."
-      ],
-      [
-        "Numeric, alphabetic and alphanumeric",
-        "Numeric means digits, such as 123456. Alphabetic means letters, such as ABC. Alphanumeric combines letters and numbers, such as BOX123. Symbol and lowercase support varies by format."
-      ],
-      [
-        "Digit and leading zero",
-        "A digit is one character from 0 to 9. 036000291452 has 12 digits, including its leading zero. Store identifiers as text so spreadsheet software does not remove zeros."
-      ],
-      [
-        "Check digit and checksum",
-        "An error-detection value calculated from the other data. EAN-8 example 96385074 ends in check digit 4. EAN, UPC and ITF-14 use a final check digit; CODE128 includes an encoded checksum. A correct checksum does not prove official assignment."
-      ],
-      [
-        "GTIN",
-        "Global Trade Item Number: an identifier for a trade item. Common lengths are GTIN-8, GTIN-12, GTIN-13 and GTIN-14. UPC-A carries GTIN-12; EAN-13 carries GTIN-13; ITF-14 carries GTIN-14."
-      ],
-      [
-        "GS1",
-        "The standards organization behind widely used product-identification systems and barcode standards. Drawing a barcode does not register a product or allocate a GS1 identifier."
-      ],
-      [
-        "Start and stop characters",
-        "Boundary markers identifying the beginning and end of a barcode. In Codabar A123456B, A starts the symbol and B stops it. Other formats add boundary patterns automatically."
-      ],
-      [
-        "Quiet zone",
-        "Blank space beside a barcode that separates its bars from nearby printing. Do not crop this space or put graphics against the bars. Required dimensions depend on the barcode and application."
-      ],
-      [
-        "Human-readable text",
-        "The printed value beneath the bars, such as QBAR-2026. It helps a person enter the value manually. Hiding it does not remove the encoded data, but some production standards require this text."
-      ],
-      [
-        "Module width or X-dimension",
-        "The width of the narrowest basic barcode element. It affects the printed symbol's size and readability. Do not stretch the barcode unevenly."
-      ],
-      [
-        "Bar height",
-        "The vertical length of the bars. Production labels need dimensions appropriate for the intended scanner, packaging and relevant standard."
-      ],
-      [
-        "Narrow and wide bars",
-        "Different element widths used by some barcode formats. Pharmacode represents numbers using narrow and wide bars. Other symbologies use different width and encoding rules."
-      ],
-      [
-        "Interleaved",
-        "In ITF, digits are encoded in pairs: one digit controls bars and the other controls the spaces. This is why ITF requires an even number of digits."
-      ],
-      [
-        "Zero suppression and UPC-E number system",
-        "Zero suppression represents eligible zero-rich UPC-A identifiers more compactly. This encoder supports UPC-E number systems 0 and 1. Example 04252614 expands to 042100005264. Not every UPC-A can be compressed."
-      ],
-      [
-        "ITF-14 bearer bars",
-        "Additional bars around, or above and below, an ITF-14 symbol that support printing and reduce certain partial-scan risks. The example demonstrates data encoding; production labels require appropriate bearer bars and verification."
-      ],
-      [
-        "PNG and SVG",
-        "PNG is a pixel-based image and may blur when enlarged. SVG describes shapes and scales without raster blur. For printing, set correct physical dimensions regardless of file type."
-      ],
-      [
-        "Do barcodes expire?",
-        "A static downloaded barcode does not expire by itself. It normally stores an identifier rather than a live database record. The receiving system determines whether that identifier remains active."
-      ],
-      [
-        "Does a barcode contain a product's price?",
-        "Usually a retail barcode identifies the product. Checkout software uses that identifier to look up its current price. Generating a barcode does not create a product or price record."
-      ],
-      [
-        "How do I check scan quality?",
-        "Use dark bars on a light background, retain quiet zones, avoid blur and distortion, and test with the actual receiving scanner. Some scanners need specific formats enabled. Regulated or high-volume labels may need formal print-quality verification."
-      ]
-    ];
-
-    glossary.forEach(function (entry) {
-      const details = element("details");
-      details.appendChild(element("summary", entry[0]));
-      const body = element("div", undefined, "qb-content");
-      paragraph(body, "", entry[1]);
-      details.appendChild(body);
-      guide.appendChild(details);
-    });
-
-    const footer = document.querySelector(".site-footer");
-    if (footer) footer.insertAdjacentElement("beforebegin", guide);
-    else document.body.appendChild(guide);
-
-    const template = document.getElementById("help-template");
-    if (template && template.content) {
-      const copy = guide.cloneNode(true);
-      copy.removeAttribute("id");
-      template.content.appendChild(copy);
-    }
-
-    const oldExample = document.querySelector(
-      '[data-example-tool="barcode"]'
-    );
-    if (oldExample && oldExample.parentElement) {
-      oldExample.parentElement.hidden = true;
-    }
-
-    function updateHelp() {
-      const f = map[select.value];
-      if (!f) return;
-
-      inline.replaceChildren();
-      paragraph(inline, f.name + ":", f.rules);
-      paragraph(inline, "Example:", f.example);
-      inline.appendChild(useButton(f));
-
-      const guideButton = element("button", "Barcode guide");
-      guideButton.type = "button";
-      guideButton.dataset.qbarGuide = "true";
-      guideButton.className = "qb-guide-link";
-      inline.appendChild(guideButton);
-
-      const hint = document.getElementById("barcode-hint");
-      if (hint) hint.textContent = hints[f.id];
-
-      const badge = document.getElementById("barcode-type-badge");
-      if (badge) badge.textContent = f.name;
-    }
-
-    select.addEventListener("change", function () {
-      Promise.resolve().then(updateHelp);
-    });
-
-    document.addEventListener("click", function (event) {
-      if (!(event.target instanceof Element)) return;
-
-      const guideButton = event.target.closest("[data-qbar-guide]");
-      if (guideButton) {
-        guide.scrollIntoView({ block: "start" });
-        return;
-      }
-
-      const button = event.target.closest("[data-qbar-use]");
-      if (!button) return;
-
-      const f = map[button.dataset.qbarUse];
-      if (!f) return;
-
-      event.preventDefault();
-
-      const dialog = button.closest("dialog");
-      if (dialog && dialog.open) dialog.close();
-
-      const tab = document.getElementById(
-        dark ? "tab-btn-barcode" : "tab-barcode"
-      );
-      if (tab) tab.click();
-
-      input.value = f.example;
-      select.value = f.id;
-      input.dispatchEvent(new Event("input", { bubbles: true }));
-      select.dispatchEvent(new Event("change", { bubbles: true }));
-      generate.click();
-      input.scrollIntoView({ block: "center" });
-    });
-
-    updateHelp();
-    window.QBarRepair.installed = true;
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", install, { once: true });
-  } else {
-    install();
-  }
-}
-
-/* Editor helpers. */
-
-const fileInput = document.getElementById("source-file");
-const buildButton = document.getElementById("build");
-const downloadLink = document.getElementById("download");
-const logBox = document.getElementById("log");
-const previews = document.getElementById("previews");
-
-let downloadURL = null;
-
-function log(message) {
-  logBox.textContent += message + "\n";
-}
-
-function parse(code) {
-  return acorn.parse(code, {
-    ecmaVersion: "latest",
-    sourceType: "script",
-    allowHashBang: true
-  });
-}
-
-function walk(root, visit) {
-  const stack = [root];
-
-  while (stack.length) {
-    const current = stack.pop();
-    if (!current || typeof current.type !== "string") continue;
-
-    visit(current);
-
-    Object.keys(current).forEach(function (key) {
-      const value = current[key];
-
-      if (Array.isArray(value)) {
-        value.forEach(function (child) {
-          if (child && typeof child.type === "string") stack.push(child);
-        });
-      } else if (value && typeof value.type === "string") {
-        stack.push(value);
-      }
-    });
-  }
-}
-
-function applyEdits(code, edits) {
-  edits.sort(function (a, b) { return b.start - a.start; });
-  let boundary = code.length;
-
-  edits.forEach(function (edit) {
-    if (edit.end > boundary) {
-      throw new Error("Overlapping source edits were detected.");
-    }
-
-    code = code.slice(0, edit.start) +
-           edit.text +
-           code.slice(edit.end);
-
-    boundary = edit.start;
-  });
-
-  return code;
-}
-
-function serialise(doc) {
-  return "<!DOCTYPE html>\n" + doc.documentElement.outerHTML;
-}
-
-function makeTheme(original, theme) {
-  const doc = new DOMParser().parseFromString(original, "text/html");
-  const id = theme === "light"
-    ? "barcode-format"
-    : "barcode-format-select";
-
-  const select = doc.getElementById(id);
-  if (!select) throw new Error(theme + ": format selector not found.");
-
-  select.replaceChildren();
-
-  FORMATS.forEach(function (f, index) {
-    const option = doc.createElement("option");
-    option.value = f.id;
-    option.textContent = f.name + ": " + f.short;
-    option.selected = index === 0;
-
-    if (theme === "dark") {
-      option.className = "bg-slate-900 text-white";
-    }
-
-    select.appendChild(option);
-  });
-
-  const counts = {
-    validator: 0,
-    samples: 0,
-    hints: 0
-  };
-
-  Array.from(doc.scripts).forEach(function (script) {
-    if (script.src) return;
-
-    const code = script.textContent;
-    const relevant = theme === "light"
-      ? /\bvalidateBarcode\b/.test(code)
-      : /\bvalidateBarcodeFormat\b/.test(code);
-
-    if (!relevant) return;
-
-    const ast = parse(code);
-    const edits = [];
-
-    walk(ast, function (node) {
-      if (node.type === "FunctionDeclaration" && node.id) {
-        if (theme === "light" &&
-            node.id.name === "validateBarcode") {
-          counts.validator++;
-
-          edits.push({
-            start: node.start,
-            end: node.end,
-            text:
-              "function validateBarcode(text, fmt) {" +
-              " return window.QBarRepair.validate(text, fmt);" +
-              "}"
-          });
-        }
-
-        if (theme === "dark" &&
-            node.id.name === "validateBarcodeFormat") {
-          counts.validator++;
-
-          edits.push({
-            start: node.start,
-            end: node.end,
-            text: `
-              function validateBarcodeFormat() {
-                const text = barcodeInput.value.trim();
-
-                if (!text) {
-                  barcodeWarningBanner.classList.add("hidden");
-                  barcodeInput.removeAttribute("aria-invalid");
-                  return true;
-                }
-
-                const message = window.QBarRepair.validate(
-                  text, barcodeFormatSelect.value
-                );
-
-                barcodeWarningMsg.textContent = message;
-                barcodeWarningBanner.classList.toggle(
-                  "hidden", !message
-                );
-
-                if (message) {
-                  barcodeInput.setAttribute("aria-invalid", "true");
-                } else {
-                  barcodeInput.removeAttribute("aria-invalid");
-                }
-
-                return !message;
-              }
-            `
-          });
-        }
-      }
-
-      if (theme === "light" &&
-          node.type === "VariableDeclarator" &&
-          node.id.type === "Identifier" &&
-          node.init) {
-        if (node.id.name === "BC_SAMPLES") {
-          counts.samples++;
-          edits.push({
-            start: node.init.start,
-            end: node.init.end,
-            text: "window.QBarRepair.samples"
-          });
-        }
-
-        if (node.id.name === "BC_HINTS") {
-          counts.hints++;
-          edits.push({
-            start: node.init.start,
-            end: node.init.end,
-            text: "window.QBarRepair.hints"
-          });
-        }
-      }
-    });
-
-    const updated = applyEdits(code, edits);
-    parse(updated);
-    script.textContent = updated;
-  });
-
-  if (counts.validator !== 1) {
-    throw new Error(
-      theme + ": expected one barcode validator; found " +
-      counts.validator + ". No file was produced."
-    );
-  }
-
-  if (theme === "light" &&
-      (counts.samples !== 1 || counts.hints !== 1)) {
-    throw new Error(
-      "Light theme: original sample or hint declarations did not match."
-    );
-  }
-
-  const runtime = doc.createElement("script");
-  runtime.id = "qbar-repair-runtime";
-
-  let runtimeCode =
-    "(" + barcodeRuntime.toString() + ")(" +
-    JSON.stringify(FORMATS) + ");";
-
-  runtimeCode = runtimeCode.replace(
-    new RegExp("<" + "/script", "gi"),
-    "<\\/script"
-  );
-
-  parse(runtimeCode);
-  runtime.textContent = runtimeCode;
-  doc.head.prepend(runtime);
-
-  log(theme + ": options, validator, examples and FAQ edited.");
-  return serialise(doc);
-}
-
-function locateSources(doc) {
-  let result = null;
-
-  Array.from(doc.scripts).forEach(function (script) {
-    if (script.src || !/\bSOURCES\b/.test(script.textContent)) return;
-
-    const code = script.textContent;
-    const ast = parse(code);
-
-    walk(ast, function (node) {
-      if (node.type !== "VariableDeclarator" ||
-          node.id.type !== "Identifier" ||
-          node.id.name !== "SOURCES" ||
-          !node.init ||
-          node.init.type !== "ObjectExpression") return;
-
-      const values = Object.create(null);
-
-      node.init.properties.forEach(function (property) {
-        if (property.type !== "Property") return;
-
-        const key = property.key.name || property.key.value;
-        if (key !== "light" && key !== "dark") return;
-
-        if (property.value.type !== "Literal" ||
-            typeof property.value.value !== "string") {
-          throw new Error("Embedded theme is not a plain HTML string.");
-        }
-
-        values[key] = property.value;
-      });
-
-      if (values.light && values.dark) {
-        if (result) throw new Error("Multiple SOURCES declarations found.");
-        result = { script: script, code: code, values: values };
-      }
-    });
-  });
-
-  if (!result) {
-    throw new Error(
-      "Could not find the original embedded light and dark theme pages."
-    );
-  }
-
-  return result;
-}
-
-function loadPreview(html, theme) {
-  return new Promise(function (resolve, reject) {
-    const heading = document.createElement("h3");
-    heading.textContent = theme === "light" ? "Light theme" : "Dark theme";
-
-    const frame = document.createElement("iframe");
-    frame.className = "preview";
-    frame.title = heading.textContent + " — updated QBar";
-    previews.append(heading, frame);
-
-    const timer = setTimeout(function () {
-      reject(new Error(
-        theme + ": preview load timed out. Check your internet connection."
-      ));
-    }, 60000);
-
-    frame.addEventListener("load", function () {
-      clearTimeout(timer);
-
+    function dlQr() { if (qrInst) qrInst.download({ name: 'qbar-qr', extension: 'png' }); }
+    function makeBc() {
+      const val = document.getElementById('bc-input').value.trim() || 'QBAR-128';
+      const fmt = document.getElementById('bc-format').value;
       try {
-        const w = frame.contentWindow;
-
-        if (!w.QBarRepair || !w.QBarRepair.installed) {
-          throw new Error(
-            theme + ": the updated barcode interface did not initialise."
-          );
-        }
-
-        resolve(frame);
-      } catch (error) {
-        reject(error);
+        JsBarcode('#bc-preview', val, { format: fmt, lineColor: '#243128', width: 2, height: 60, displayValue: true });
+      } catch (e) {
+        alert('Invalid input for selected barcode format.');
       }
-    }, { once: true });
-
-    frame.srcdoc = html;
-  });
-}
-
-async function checkTheme(html, theme) {
-  const frame = await loadPreview(html, theme);
-  const w = frame.contentWindow;
-  const doc = frame.contentDocument;
-  const api = w.QBarRepair;
-
-  if (typeof w.JsBarcode !== "function") {
-    throw new Error(theme + ": JsBarcode did not load.");
-  }
-
-  const select = doc.getElementById(
-    theme === "light" ? "barcode-format" : "barcode-format-select"
-  );
-  const input = doc.getElementById("barcode-input");
-  const button = doc.getElementById(
-    theme === "light" ? "barcode-generate" : "barcode-generate-btn"
-  );
-
-  if (!select || !input || !button) {
-    throw new Error(theme + ": barcode controls are missing.");
-  }
-
-  if (select.options.length !== FORMATS.length) {
-    throw new Error(theme + ": not all ten formats are available.");
-  }
-
-  const guide = doc.getElementById("qbar-barcode-guide");
-
-  if (!guide ||
-      guide.querySelectorAll(".qb-example svg").length !== 10) {
-    throw new Error(theme + ": one or more example images did not render.");
-  }
-
-  /*
-   * Record actual generation calls.
-   * Detached validation SVGs do not count as the visible preview.
-   */
-  const native = w.JsBarcode;
-  const oldConfetti = w.confetti;
-  let calls = [];
-
-  function recordingBarcode(target, value, options) {
-    const result = native.apply(this, arguments);
-    const el = typeof target === "string"
-      ? doc.querySelector(target)
-      : target;
-
-    calls.push({
-      element: el,
-      value: String(value),
-      format: options && options.format
-    });
-
-    return result;
-  }
-
-  Object.assign(recordingBarcode, native);
-  w.JsBarcode = recordingBarcode;
-
-  if (typeof oldConfetti === "function") {
-    w.confetti = function () {};
-  }
-
-  try {
-    for (const f of FORMATS) {
-      if (api.validate(f.example, f.id)) {
-        throw new Error(theme + ": invalid example for " + f.name);
-      }
-
-      input.value = f.example;
-      select.value = f.id;
-
-      input.dispatchEvent(new w.Event("input", { bubbles: true }));
-      select.dispatchEvent(new w.Event("change", { bubbles: true }));
-
-      calls = [];
-      button.click();
-
-      const visible = doc.getElementById("barcode-svg");
-
-      const generated = calls.some(function (call) {
-        return call.element === visible &&
-               visible && visible.isConnected &&
-               call.value === f.example &&
-               call.format === f.id;
+    }
+    function dlBc() {
+      const svg = document.getElementById('bc-preview');
+      const xml = new XMLSerializer().serializeToString(svg);
+      const url = URL.createObjectURL(new Blob([xml], { type: 'image/svg+xml;charset=utf-8' }));
+      const a = document.createElement('a'); a.href = url; a.download = 'qbar-code.svg'; a.click();
+    }
+    window.addEventListener('DOMContentLoaded', () => {
+      makeQr();
+      document.querySelectorAll('.bc-guide-img').forEach(el => {
+        try {
+          JsBarcode(el, el.dataset.value, { format: el.dataset.format, width: 1.5, height: 36, margin: 4, displayValue: true, fontSize: 10, lineColor: '#285a43' });
+        } catch (e) {}
       });
-
-      if (!generated ||
-          !visible ||
-          !visible.querySelector("rect,path,line")) {
-        throw new Error(
-          theme + ": visible generation failed for " + f.name
-        );
-      }
-    }
-
-    const invalidCases = [
-      ["CODE128", "café"],
-      ["CODE39", "lowercase"],
-      ["codabar", "A123456"],
-      ["EAN13", "5901234123458"],
-      ["EAN8", "96385075"],
-      ["UPC", "036000291453"],
-      ["UPCE", "04252615"],
-      ["ITF", "1234567"],
-      ["ITF14", "10012345000018"],
-      ["PHARMACODE", "2"],
-      ["PHARMACODE", "131071"]
-    ];
-
-    invalidCases.forEach(function (test) {
-      if (!api.validate(test[1], test[0])) {
-        throw new Error(
-          theme + ": invalid input was accepted for " + test[0]
-        );
-      }
     });
+  <\/script>
+</body>
+</html>`,
 
-    [
-      ["EAN13", "590123412345"],
-      ["EAN8", "9638507"],
-      ["UPC", "03600029145"],
-      ["UPCE", "425261"],
-      ["PHARMACODE", "3"],
-      ["PHARMACODE", "131070"]
-    ].forEach(function (test) {
-      const message = api.validate(test[1], test[0]);
-      if (message) throw new Error(theme + ": " + message);
-    });
-
-    input.value = FORMATS[0].example;
-    select.value = FORMATS[0].id;
-    input.dispatchEvent(new w.Event("input", { bubbles: true }));
-    select.dispatchEvent(new w.Event("change", { bubbles: true }));
-    button.click();
-
-    log(
-      theme +
-      ": PASS — ten formats generate; ten example images render; " +
-      "invalid inputs and short retail inputs checked."
-    );
-  } finally {
-    w.JsBarcode = native;
-    w.confetti = oldConfetti;
-  }
-}
-
-buildButton.addEventListener("click", async function () {
-  downloadLink.hidden = true;
-  previews.hidden = true;
-  previews.replaceChildren();
-
-  const previewTitle = document.createElement("h2");
-  previewTitle.textContent = "Updated theme previews";
-  previews.appendChild(previewTitle);
-
-  logBox.textContent = "";
-
-  if (!fileInput.files.length) {
-    log("Select your original HTML or TXT file first.");
-    return;
-  }
-
-  if (!window.acorn) {
-    log(
-      "The JavaScript parser did not load. Connect to the internet " +
-      "and reopen this editor."
-    );
-    return;
-  }
-
-  buildButton.disabled = true;
-
-  try {
-    const original = await fileInput.files[0].text();
-
-    if (original.includes("barcodeUpgradeRuntime") ||
-        original.includes('data-qbar-upgraded="1"')) {
-      throw new Error(
-        "This file contains the earlier add-on. Select the original " +
-        "317896-byte file you uploaded, without that add-on."
-      );
-    }
-
-    if (original.includes("qbar-repair-runtime")) {
-      throw new Error("This file has already been edited by this tool.");
-    }
-
-    const outer = new DOMParser().parseFromString(original, "text/html");
-    const sources = locateSources(outer);
-
-    log("Original embedded light and dark pages found.");
-
-    const light = makeTheme(sources.values.light.value, "light");
-    const dark = makeTheme(sources.values.dark.value, "dark");
-
-    function safeString(value) {
-      return JSON.stringify(value)
-        .replace(/</g, "\\u003c")
-        .replace(/\u2028/g, "\\u2028")
-        .replace(/\u2029/g, "\\u2029");
-    }
-
-    const updatedWrapper = applyEdits(sources.code, [
-      {
-        start: sources.values.light.start,
-        end: sources.values.light.end,
-        text: safeString(light)
-      },
-      {
-        start: sources.values.dark.start,
-        end: sources.values.dark.end,
-        text: safeString(dark)
+    dark: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QBar Code Studio - All-in-One QR Code & Barcode Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"><\/script>
+  <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.5.0/lib/qr-code-styling.js"><\/script>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"><\/script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Outfit', 'sans-serif'] },
+          colors: { brand: { pink: '#FF2E93', purple: '#FF007A', violet: '#7000FF', cyan: '#00F0FF', yellow: '#FFDE00', dark: '#0B0F19', slate: '#121625' } }
+        }
       }
-    ]);
+    }
+  <\/script>
+  <style>
+    body {
+      font-family: 'Outfit', sans-serif;
+      background-color: #07090e;
+      background-image: 
+        radial-gradient(at 10% 10%, rgba(255, 46, 147, 0.22) 0px, transparent 50%),
+        radial-gradient(at 90% 15%, rgba(112, 0, 255, 0.25) 0px, transparent 50%),
+        radial-gradient(at 50% 85%, rgba(0, 240, 255, 0.18) 0px, transparent 50%);
+      background-attachment: fixed; min-height: 100vh;
+    }
+    .glass-card { background: rgba(18, 22, 37, 0.82); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.12); }
+    .glass-input { background: rgba(10, 13, 22, 0.65); border: 1.5px solid rgba(255, 255, 255, 0.15); outline: none; }
+    .btn-gradient { background: linear-gradient(135deg, #FF2E93 0%, #7000FF 50%, #00F0FF 100%); transition: all 0.3s ease; }
+    .btn-gradient:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(255, 46, 147, 0.5); }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+  </style>
+</head>
+<body class="text-slate-100 flex flex-col justify-between min-h-screen p-4 sm:p-8">
+  <main class="w-full max-w-4xl mx-auto my-auto z-10">
+    <header class="text-center mb-8">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-card text-brand-cyan text-xs font-semibold uppercase mb-3 border border-brand-cyan/30">
+        <i class="fa-solid fa-wand-magic-sparkles text-brand-yellow"></i> All-in-One Generator
+      </div>
+      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight mb-2">
+        <span class="bg-gradient-to-r from-brand-pink via-brand-violet to-brand-cyan bg-clip-text text-transparent">
+          QBar Code Studio
+        </span>
+      </h1>
+      <p class="text-slate-400 text-sm max-w-lg mx-auto">
+        Instant, high-resolution QR codes &amp; barcodes. 100% Free &amp; Unlimited.
+      </p>
+    </header>
 
-    parse(updatedWrapper);
-    sources.script.textContent = updatedWrapper;
+    <div class="glass-card rounded-3xl p-6 sm:p-10 shadow-2xl">
+      <div class="flex items-center justify-center p-1.5 bg-slate-950/80 rounded-2xl border border-slate-800 mb-8 max-w-md mx-auto">
+        <button id="tab-btn-qr" onclick="switchTab('qr')" class="flex-1 py-3 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 bg-gradient-to-r from-brand-pink to-brand-violet text-white">
+          <i class="fa-solid fa-qrcode"></i> QR Code
+        </button>
+        <button id="tab-btn-barcode" onclick="switchTab('barcode')" class="flex-1 py-3 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 text-slate-400 hover:text-white">
+          <i class="fa-solid fa-barcode"></i> Barcode
+        </button>
+      </div>
 
-    const updatedHTML = serialise(outer);
-    log("Edited JavaScript syntax checked.");
-    log("Loading both theme pages for generation checks…");
+      <!-- QR Tab -->
+      <div id="tab-qr" class="tab-content active">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <div class="lg:col-span-7 space-y-4">
+            <label class="text-xs font-bold uppercase tracking-wider text-slate-300">Content or URL</label>
+            <input type="text" id="qr-input" value="https://github.com" class="glass-input w-full px-4 py-3 rounded-2xl text-slate-100 text-sm" />
+            <button onclick="genQr()" class="btn-gradient w-full py-4 rounded-2xl font-bold text-white text-sm">Generate QR Code</button>
+          </div>
+          <div class="lg:col-span-5 flex flex-col items-center justify-center p-6 bg-slate-900/90 rounded-3xl border border-slate-800">
+            <div id="qr-target" class="p-4 bg-white rounded-2xl"></div>
+            <button onclick="dlQr()" class="mt-4 w-full py-3 px-4 rounded-xl font-bold text-slate-900 bg-brand-cyan text-sm">Download PNG</button>
+          </div>
+        </div>
+      </div>
 
-    previews.hidden = false;
+      <!-- Barcode Tab -->
+      <div id="tab-barcode" class="tab-content">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <div class="lg:col-span-7 space-y-4">
+            <label class="text-xs font-bold uppercase tracking-wider text-slate-300">Barcode Content</label>
+            <input type="text" id="bc-input" value="QBAR-128" class="glass-input w-full px-4 py-3 rounded-2xl text-slate-100 text-sm" />
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mt-2">Format</label>
+            <select id="bc-fmt" onchange="genBc()" class="glass-input w-full px-4 py-3 rounded-2xl text-slate-100 text-sm">
+              <option value="CODE128">CODE128</option>
+              <option value="CODE39">CODE39</option>
+              <option value="codabar">Codabar</option>
+              <option value="EAN13">EAN-13</option>
+              <option value="EAN8">EAN-8</option>
+              <option value="UPC">UPC-A</option>
+              <option value="UPCE">UPC-E</option>
+              <option value="ITF">ITF</option>
+              <option value="ITF14">ITF-14</option>
+              <option value="pharmacode">Pharmacode</option>
+            </select>
+            <button onclick="genBc()" class="btn-gradient w-full py-4 rounded-2xl font-bold text-white text-sm">Generate Barcode</button>
+          </div>
+          <div class="lg:col-span-5 flex flex-col items-center justify-center p-6 bg-slate-900/90 rounded-3xl border border-slate-800">
+            <div class="p-4 bg-white rounded-2xl w-full flex justify-center"><svg id="bc-svg"></svg></div>
+            <button onclick="dlBc()" class="mt-4 w-full py-3 px-4 rounded-xl font-bold text-slate-900 bg-brand-cyan text-sm">Download SVG</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    await checkTheme(light, "light");
-    await checkTheme(dark, "dark");
+    <footer class="mt-8 text-center text-xs text-slate-500">
+      © 2026 QBar Code Studio · Fast, Client-Side, &amp; Unlimited
+    </footer>
+  </main>
 
-    if (downloadURL) URL.revokeObjectURL(downloadURL);
+  <script>
+    let qr = null;
+    function switchTab(t) {
+      document.getElementById('tab-qr').className = t === 'qr' ? 'tab-content active' : 'tab-content';
+      document.getElementById('tab-barcode').className = t === 'barcode' ? 'tab-content active' : 'tab-content';
+      document.getElementById('tab-btn-qr').className = t === 'qr' ? 'flex-1 py-3 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 bg-gradient-to-r from-brand-pink to-brand-violet text-white' : 'flex-1 py-3 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 text-slate-400 hover:text-white';
+      document.getElementById('tab-btn-barcode').className = t === 'barcode' ? 'flex-1 py-3 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 bg-gradient-to-r from-brand-pink to-brand-violet text-white' : 'flex-1 py-3 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 text-slate-400 hover:text-white';
+      if (t === 'barcode') genBc();
+    }
+    function genQr() {
+      const val = document.getElementById('qr-input').value.trim() || 'https://github.com';
+      const container = document.getElementById('qr-target');
+      container.innerHTML = '';
+      qr = new QRCodeStyling({
+        width: 200, height: 200, type: 'svg', data: val,
+        dotsOptions: { color: '#0f172a', type: 'rounded' },
+        backgroundOptions: { color: '#ffffff' }
+      });
+      qr.append(container);
+    }
+    function dlQr() { if (qr) qr.download({ name: 'qbar-qr', extension: 'png' }); }
+    function genBc() {
+      const val = document.getElementById('bc-input').value.trim() || 'QBAR-128';
+      const fmt = document.getElementById('bc-fmt').value;
+      try {
+        JsBarcode('#bc-svg', val, { format: fmt, lineColor: '#0f172a', width: 2, height: 60, displayValue: true });
+      } catch (e) { alert('Invalid input for selected format.'); }
+    }
+    function dlBc() {
+      const svg = document.getElementById('bc-svg');
+      const xml = new XMLSerializer().serializeToString(svg);
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([xml], { type: 'image/svg+xml;charset=utf-8' }));
+      a.download = 'qbar-barcode.svg'; a.click();
+    }
+    window.addEventListener('DOMContentLoaded', () => { genQr(); });
+  <\/script>
+</body>
+</html>`
+  };
 
-    downloadURL = URL.createObjectURL(new Blob(
-      [updatedHTML],
-      { type: "text/html;charset=utf-8" }
-    ));
+  var frames = { light: document.getElementById('view-light'), dark: document.getElementById('view-dark') };
+  var btn = document.getElementById('theme-switch'), label = document.getElementById('theme-label');
+  var loaded = {};
 
-    downloadLink.href = downloadURL;
-    downloadLink.download = "qbar-code-studio-updated.html";
-    downloadLink.hidden = false;
-
-    log("");
-    log("READY — download the complete updated website.");
-    log(
-      "Before publishing, also check QR generation, theme switching, " +
-      "PNG/SVG downloads and your actual scanner."
-    );
-  } catch (error) {
-    console.error(error);
-    log("");
-    log("STOPPED: " + error.message);
-    log(
-      "No download was enabled. The original selected file was not changed."
-    );
-  } finally {
-    buildButton.disabled = false;
+  function load(name) {
+    if (!loaded[name]) { frames[name].srcdoc = SOURCES[name]; loaded[name] = true; }
   }
-});
+
+  function setTheme(name, save) {
+    load(name);
+    frames.light.hidden = name !== 'light';
+    frames.dark.hidden  = name !== 'dark';
+    document.body.setAttribute('data-theme', name);
+    var toDark = name === 'light';
+    btn.setAttribute('aria-checked', String(name === 'dark'));
+    btn.setAttribute('aria-label', toDark ? 'Switch to dark theme' : 'Switch to light theme');
+    label.textContent = toDark ? 'Dark theme' : 'Light theme';
+    if (save) { try { localStorage.setItem('qbar-theme-v2', name); } catch (e) {} }
+  }
+
+  btn.addEventListener('click', function () {
+    setTheme(document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light', true);
+  });
+
+  var start = 'dark';
+  try { if (localStorage.getItem('qbar-theme-v2') === 'light') start = 'light'; } catch (e) {}
+  setTheme(start, false);
+})();
 </script>
 </body>
 </html>
