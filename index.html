@@ -84,6 +84,59 @@
   try { if (localStorage.getItem('qbar-theme-v2') === 'light') start = 'light'; } catch (e) {}
   setTheme(start, false);
 })();
+// Combined Injector for Legal Links and Crawlable SEO Guide
+  ['view-light', 'view-dark'].forEach(function(id) {
+    var frame = document.getElementById(id);
+    if (!frame) return;
+
+    function injectAll() {
+      try {
+        var doc = frame.contentDocument || frame.contentWindow.document;
+        if (!doc || !doc.body) return;
+        var footer = doc.querySelector('.site-footer') || doc.querySelector('footer');
+        if (!footer) return;
+
+        // 1. Inject Crawlable Guide & FAQ
+        if (!doc.getElementById('seo-guide-section')) {
+          var guide = doc.createElement('section');
+          guide.id = 'seo-guide-section';
+          guide.style.cssText = 'max-width:900px;margin:40px auto 20px;padding:24px 20px;line-height:1.7;font-family:inherit;opacity:0.92;';
+          guide.innerHTML = 
+            '<h2 style="font-size:22px;margin-bottom:12px;">Free Online QR Code and Barcode Generator Guide</h2>' +
+            '<p style="margin-bottom:16px;">QBar Code Studio is an all-in-one web utility designed for businesses, developers, and individuals who need instant, high-resolution scannable codes. Whether you are generating a custom QR code for your digital menu or producing standard retail and warehouse barcodes, all rendering happens directly on your device with complete privacy.</p>' +
+            '<h3 style="font-size:17px;margin:20px 0 8px;">Popular Use Cases</h3>' +
+            '<ul style="margin:0 0 20px;padding-left:20px;">' +
+              '<li><strong>Digital Menus & Portfolios:</strong> Encode website URLs, social media links, or review landing pages into customized QR codes with downloadable SVG vectors.</li>' +
+              '<li><strong>Wi-Fi & Contact Sharing:</strong> Create scannable credentials so customers and visitors can connect to networks or save vCard contact details without manual typing.</li>' +
+              '<li><strong>Retail & Inventory Management:</strong> Generate standard CODE128, EAN-13, and UPC-A codes for packaging, bin labeling, and point-of-sale checkout compatibility.</li>' +
+              '<li><strong>Master Cartons & Warehousing:</strong> Export ITF-14 barcodes engineered for corrugated outer boxes and logistics tracking systems.</li>' +
+            '</ul>' +
+            '<h3 style="font-size:17px;margin:20px 0 8px;">Frequently Asked Questions</h3>' +
+            '<div style="display:flex;flex-direction:column;gap:12px;">' +
+              '<div><strong>Do generated QR codes expire?</strong><br>No. All codes generated on QBar Code Studio are static. They contain the data directly within the pattern and do not rely on redirects or third-party servers.</div>' +
+              '<div><strong>What is the difference between PNG and SVG downloads?</strong><br>PNG is a raster image format ideal for websites, documents, and standard printing. SVG is an infinitely scalable vector format preferred for commercial packaging and high-resolution print design.</div>' +
+              '<div><strong>Are these barcodes eligible for retail checkout?</strong><br>Our generator produces valid visual formats for EAN and UPC barcodes. However, commercial retail identification numbers must be licensed from standards organizations such as GS1.</div>' +
+            '</div>';
+          footer.parentNode.insertBefore(guide, footer);
+        }
+
+        // 2. Inject Legal Links into Footer
+        if (!doc.getElementById('adsense-links')) {
+          var nav = doc.createElement('div');
+          nav.id = 'adsense-links';
+          nav.style.cssText = 'display:inline-flex;gap:14px;margin-left:14px;font-size:11px;';
+          nav.innerHTML = '<a href="/about.html" target="_top" style="color:inherit;text-decoration:underline;">About & Contact</a>' +
+                          '<a href="/privacy.html" target="_top" style="color:inherit;text-decoration:underline;">Privacy Policy</a>' +
+                          '<a href="/terms.html" target="_top" style="color:inherit;text-decoration:underline;">Terms</a>';
+          footer.appendChild(nav);
+        }
+      } catch (e) {}
+    }
+
+    frame.addEventListener('load', injectAll);
+    setTimeout(injectAll, 300);
+    setTimeout(injectAll, 1000);
+  });
 </script>
 </body>
 </html>
