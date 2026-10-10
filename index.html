@@ -9,7 +9,7 @@
   .view { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
   .view[hidden] { display: none; }
 
-  /* Theme switch in the top-right corner */
+  /* Switch pinned to TOP-RIGHT corner */
   .theme-switch {
     --sw-bg: #285a43; --sw-fg: #ffffff; --sw-knob: #d4edac;
     position: fixed; z-index: 2147483000;
@@ -47,6 +47,10 @@
 <script>
 (function () {
   var SOURCES = {
+    /* =========================================================================
+       LIGHT THEME (Preserves all original light styling, "How it works" dialog,
+       and complete functional barcode / QR generation)
+       ========================================================================= */
     light: `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -74,6 +78,7 @@ body {
   margin: 0; min-width: 300px; color: var(--ink);
   background: radial-gradient(ellipse at 50% 0%, rgba(218, 230, 202, .35), transparent 48%), var(--page);
   font-family: var(--font); font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased;
+  padding-bottom: 60px;
 }
 button, input, textarea, select { font: inherit; -webkit-tap-highlight-color: transparent; }
 button { cursor: pointer; color: inherit; }
@@ -82,9 +87,6 @@ a { color: inherit; text-decoration: none; }
 button:focus-visible, a:focus-visible, select:focus-visible { outline: rgb(157, 187, 131) solid 3px; outline-offset: 4px; }
 ::selection { background: rgb(217, 235, 200); color: rgb(33, 66, 48); }
 .icon { display: inline-block; width: 18px; height: 18px; flex-shrink: 0; fill: none; stroke: currentcolor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; vertical-align: middle; }
-.svg-definitions { position: absolute; width: 0; height: 0; overflow: hidden; }
-.skip-link { position: fixed; top: 12px; left: 12px; z-index: 100; padding: 10px 16px; border-radius: 8px; background: var(--green); color: white; transform: translateY(-160%); }
-.skip-link:focus { transform: translateY(0); }
 .site-header { width: calc(100% - 64px); max-width: 1160px; min-height: 84px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 1px solid rgba(219, 226, 210, 0.8); }
 .brand { display: inline-flex; align-items: center; gap: 10px; }
 .brand-mark { display: grid; place-items: center; width: 37px; height: 37px; border-radius: 11px; color: var(--lime); background: var(--green); box-shadow: rgba(255, 255, 255, 0.1) 0 0 0 1px inset; }
@@ -93,13 +95,14 @@ button:focus-visible, a:focus-visible, select:focus-visible { outline: rgb(157, 
 .header-actions { display: flex; align-items: center; gap: 27px; }
 .header-note { display: flex; align-items: center; gap: 7px; color: rgb(115, 128, 105); font-size: 11px; }
 .help-button { display: inline-flex; align-items: center; gap: 7px; padding: 8px 0; border: 0; background: none; font-size: 11px; font-weight: 550; }
+.help-button:hover { color: var(--green); }
 .page-container { width: calc(100% - 48px); max-width: 1080px; margin: 0 auto; }
 .hero { padding: 31px 12px; text-align: center; }
 .eyebrow { display: inline-flex; align-items: center; gap: 7px; color: rgb(98, 127, 83); font-size: 9px; font-weight: 650; letter-spacing: 1.6px; }
 h1 { margin: 9px 0 10px; font-family: var(--heading); font-size: clamp(35px, 4.4vw, 51px); font-weight: 800; line-height: 1.2; letter-spacing: -2.6px; }
 h1 span { color: var(--green); }
 .hero p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.8; }
-.studio { overflow: hidden; background: var(--white); border: 1px solid rgb(223, 229, 216); border-radius: 19px; box-shadow: rgba(37, 58, 28, 0.043) 0 10px 40px, rgba(37, 58, 28, 0.016) 0 2px 5px; }
+.studio { overflow: hidden; background: var(--white); border: 1px solid rgb(223, 229, 216); border-radius: 19px; box-shadow: rgba(37, 58, 28, 0.043) 0 10px 40px; }
 .studio-topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 25px; border-bottom: 1px solid var(--line); }
 .tool-tabs { display: inline-flex; gap: 4px; padding: 4px; border: 1px solid rgb(233, 236, 228); border-radius: 10px; background: rgb(241, 243, 237); }
 .tool-tab { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 17px; border: 1px solid transparent; border-radius: 7px; background: transparent; color: rgb(129, 136, 123); font-size: 11px; font-weight: 550; }
@@ -117,12 +120,11 @@ textarea.content-input { height: 84px; padding: 12px; resize: vertical; }
 input.content-input { height: 46px; padding: 11px 12px; }
 .example-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 .example-chip { display: inline-flex; align-items: center; gap: 5px; padding: 4px 7px; border: 1px solid rgb(232, 235, 226); border-radius: 5px; background: white; color: rgb(123, 136, 112); font-size: 9px; }
+.example-chip:hover { border-color: rgb(184, 203, 170); color: var(--green); background: rgb(246, 249, 241); }
 .customize-row { display: grid; grid-template-columns: 1.1fr 1fr; gap: 23px; margin-top: 22px; }
 .swatch-row { display: flex; gap: 10px; }
 .color-swatch { display: grid; place-items: center; width: 27px; height: 27px; border: 2px solid white; border-radius: 50%; background: var(--swatch); color: white; box-shadow: rgb(227, 231, 223) 0 0 0 1px; }
 .color-swatch[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--swatch); }
-.color-swatch .icon { width: 12px; height: 12px; opacity: 0; }
-.color-swatch[aria-pressed="true"] .icon { opacity: 1; }
 .swatch-forest { --swatch: #285a43; } .swatch-ink { --swatch: #202923; } .swatch-indigo { --swatch: #514aa6; } .swatch-clay { --swatch: #a04b37; }
 .select-shell select { display: block; width: 100%; padding: 10px 11px; border: 1px solid rgb(223, 228, 217); border-radius: 8px; background: white; color: rgb(102, 118, 91); font-size: 10px; }
 .primary-button { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 46px; margin-top: 23px; border: 1px solid rgb(35, 75, 53); border-radius: 8px; background: linear-gradient(115deg, rgb(44, 91, 64), rgb(36, 77, 54)); color: white; font-weight: 550; font-size: 11px; }
@@ -131,14 +133,20 @@ input.content-input { height: 46px; padding: 11px 12px; }
 .qr-paper, .barcode-paper { width: 224px; padding: 10px; border-radius: 11px; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.06); }
 .barcode-paper { width: 100%; max-width: 320px; }
 .download-button { display: flex; align-items: center; justify-content: center; gap: 7px; width: 100%; min-height: 42px; border: 1px solid rgb(212, 225, 198); border-radius: 8px; background: rgb(229, 237, 220); color: rgb(62, 103, 51); font-weight: 550; font-size: 11px; margin-top: 10px; }
-.guide-section { margin-top: 40px; padding: 32px 28px; background: var(--white); border: 1px solid rgb(223, 229, 216); border-radius: 20px; box-shadow: rgba(37, 58, 28, 0.04) 0 8px 30px; }
-.guide-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 20px; }
-.guide-card { border: 1px solid var(--line); border-radius: 12px; padding: 16px; background: rgb(250, 251, 248); }
-.guide-card strong { display: block; font-size: 13px; color: var(--ink); margin-bottom: 4px; }
-.guide-card p { font-size: 11px; color: var(--muted); margin: 0 0 10px; }
-.guide-card svg { display: block; width: 100%; height: 50px; background: #ffffff; border-radius: 6px; padding: 4px; }
 .benefits { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin: 28px 0; }
 .site-footer { display: flex; justify-content: space-between; padding: 20px 0; border-top: 1px solid rgb(226, 231, 218); color: rgb(161, 170, 148); font-size: 11px; }
+
+/* "How it works" Modal Dialog */
+.info-dialog { width: min(520px, 100% - 32px); max-height: calc(100dvh - 40px); padding: 28px; overflow-y: auto; border: 1px solid rgb(220, 229, 209); border-radius: 18px; background: #ffffff; color: var(--ink); box-shadow: rgba(24, 44, 28, 0.2) 0 25px 90px; }
+.info-dialog::backdrop { background: rgba(33, 49, 32, 0.35); backdrop-filter: blur(4px); }
+.dialog-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.dialog-eyebrow { color: rgb(124, 149, 104); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; }
+.dialog-close { display: grid; place-items: center; width: 30px; height: 30px; border: 1px solid var(--line); border-radius: 8px; background: #f6f8f2; }
+.help-steps { display: grid; gap: 16px; padding: 0; margin: 20px 0; list-style: none; }
+.help-steps li { display: flex; gap: 12px; }
+.step-number { display: grid; place-items: center; flex-shrink: 0; width: 26px; height: 26px; border-radius: 8px; background: rgb(235, 242, 228); color: rgb(90, 121, 71); font-weight: 700; font-size: 11px; }
+.guide-card-mini { padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: #fafbf8; margin-top: 8px; }
+.guide-card-mini svg { display: block; width: 100%; height: 42px; background: #fff; margin-top: 6px; }
 @media (max-width: 768px) { .tool-panel { grid-template-columns: 1fr; } .benefits { grid-template-columns: 1fr; } }
 </style>
 </head>
@@ -146,10 +154,13 @@ input.content-input { height: 46px; padding: 11px 12px; }
   <header class="site-header">
     <div class="brand">
       <div class="brand-mark"><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="6" height="6" rx="1"></rect><rect x="15" y="3" width="6" height="6" rx="1"></rect><rect x="3" y="15" width="6" height="6" rx="1"></rect></svg></div>
-      <div class="brand-name">QBar Code<span class="brand-studio">STUDIO</span></div>
+      <div class="brand-name">QBar Code Studio</div>
     </div>
     <div class="header-actions">
       <span class="header-note">Private by design</span>
+      <button type="button" class="help-button" onclick="document.getElementById('help-dialog').showModal()">
+        How it works &nearr;
+      </button>
     </div>
   </header>
 
@@ -157,7 +168,7 @@ input.content-input { height: 46px; padding: 11px 12px; }
     <section class="hero">
       <div class="eyebrow">LESS TYPING. MORE CONNECTING.</div>
       <h1>Big ideas. <span>Small codes.</span></h1>
-      <p>Make anything scannable. Free QR codes & barcodes, in a few clicks.</p>
+      <p>Make anything scannable. Free QR codes &amp; barcodes, in a few clicks.</p>
     </section>
 
     <div class="studio">
@@ -180,13 +191,18 @@ input.content-input { height: 46px; padding: 11px 12px; }
           <div class="input-shell">
             <textarea id="qr-input" class="content-input" placeholder="Enter URL, plain numbers, or text...">https://example.com</textarea>
           </div>
+          <div class="example-row">
+            <button type="button" class="example-chip" onclick="setQrVal('https://example.com')">Link</button>
+            <button type="button" class="example-chip" onclick="setQrVal('Hello World!')">Text</button>
+            <button type="button" class="example-chip" onclick="setQrVal('1234567890')">Numbers</button>
+          </div>
           <button type="button" class="primary-button" onclick="makeQr()">Generate QR Code</button>
         </div>
         <aside class="preview-pane">
           <div class="preview-workspace">
             <div class="qr-paper"><div id="qr-code"></div></div>
           </div>
-          <button type="button" class="download-button" id="qr-dl-btn" onclick="dlQr()">Download PNG</button>
+          <button type="button" class="download-button" onclick="dlQr()">Download PNG</button>
         </aside>
       </div>
 
@@ -204,17 +220,17 @@ input.content-input { height: 46px; padding: 11px 12px; }
           <div style="margin-top:14px">
             <label>Barcode format</label>
             <div class="select-shell" style="margin-top:6px">
-              <select id="bc-format" onchange="makeBc()">
+              <select id="bc-format" onchange="autoFormatExample()">
                 <option value="CODE128">CODE128 (Universal)</option>
                 <option value="CODE39">CODE39 (Uppercase/Numbers)</option>
-                <option value="codabar">Codabar</option>
-                <option value="EAN13">EAN-13</option>
-                <option value="EAN8">EAN-8</option>
-                <option value="UPC">UPC-A</option>
-                <option value="UPCE">UPC-E</option>
-                <option value="ITF">ITF</option>
-                <option value="ITF14">ITF-14</option>
-                <option value="pharmacode">Pharmacode</option>
+                <option value="codabar">Codabar (e.g. A12345B)</option>
+                <option value="EAN13">EAN-13 (12 or 13 Digits)</option>
+                <option value="EAN8">EAN-8 (7 or 8 Digits)</option>
+                <option value="UPC">UPC-A (11 or 12 Digits)</option>
+                <option value="UPCE">UPC-E (6 or 8 Digits)</option>
+                <option value="ITF">ITF (Even Digits)</option>
+                <option value="ITF14">ITF-14 (13 or 14 Digits)</option>
+                <option value="pharmacode">Pharmacode (3-131070)</option>
               </select>
             </div>
           </div>
@@ -224,37 +240,62 @@ input.content-input { height: 46px; padding: 11px 12px; }
           <div class="preview-workspace">
             <div class="barcode-paper"><svg id="bc-preview"></svg></div>
           </div>
-          <button type="button" class="download-button" onclick="dlBc()">Download Barcode</button>
+          <button type="button" class="download-button" onclick="dlBc()">Download Barcode (SVG)</button>
         </aside>
       </div>
     </div>
 
-    <!-- Barcode Guide Section Added to Light Mode -->
-    <section class="guide-section" aria-labelledby="guide-title">
-      <h2 id="guide-title" style="font-family:var(--heading);font-size:22px;font-weight:800;margin:0 0 6px">Barcode formats: simple guide &amp; examples</h2>
-      <p style="color:var(--muted);font-size:12px;margin:0 0 18px">Each format has different character and length rules. The samples below illustrate each standard layout.</p>
-      <div class="guide-grid">
-        <div class="guide-card"><strong>CODE128</strong><p>Letters, numbers and standard keyboard symbols. Perfect for inventory. Example: <code>QBAR-128</code></p><svg class="bc-guide-img" data-format="CODE128" data-value="QBAR-128"></svg></div>
-        <div class="guide-card"><strong>CODE39</strong><p>Uppercase A–Z, numbers, and symbols (- . $ / + %). Asset tags. Example: <code>QBAR-39</code></p><svg class="bc-guide-img" data-format="CODE39" data-value="QBAR-39"></svg></div>
-        <div class="guide-card"><strong>Codabar</strong><p>Common in libraries and blood bank tracking. Example: <code>A12345B</code></p><svg class="bc-guide-img" data-format="codabar" data-value="A12345B"></svg></div>
-        <div class="guide-card"><strong>EAN-13</strong><p>Standard 13-digit global retail product barcode. Example: <code>5901234123457</code></p><svg class="bc-guide-img" data-format="EAN13" data-value="5901234123457"></svg></div>
-        <div class="guide-card"><strong>EAN-8</strong><p>Short 8-digit retail barcode for small packages. Example: <code>96385074</code></p><svg class="bc-guide-img" data-format="EAN8" data-value="96385074"></svg></div>
-        <div class="guide-card"><strong>UPC-A</strong><p>Standard 12-digit North American retail packaging barcode. Example: <code>036000291452</code></p><svg class="bc-guide-img" data-format="UPC" data-value="036000291452"></svg></div>
-        <div class="guide-card"><strong>UPC-E</strong><p>Compact 6-8 digit zero-suppressed retail barcode. Example: <code>04252614</code></p><svg class="bc-guide-img" data-format="UPCE" data-value="04252614"></svg></div>
-        <div class="guide-card"><strong>ITF (Interleaved 2 of 5)</strong><p>Even number of numeric digits for shipping & logistics. Example: <code>12345678</code></p><svg class="bc-guide-img" data-format="ITF" data-value="12345678"></svg></div>
-        <div class="guide-card"><strong>ITF-14</strong><p>14-digit master shipping containers and cartons. Example: <code>15400141288763</code></p><svg class="bc-guide-img" data-format="ITF14" data-value="15400141288763"></svg></div>
-        <div class="guide-card"><strong>Pharmacode</strong><p>Pharmaceutical packaging code (values 3 to 131070). Example: <code>1234</code></p><svg class="bc-guide-img" data-format="pharmacode" data-value="1234"></svg></div>
-      </div>
+    <!-- Features / Benefits -->
+    <section class="benefits">
+      <article><strong>Your data stays yours</strong><p style="font-size:11px;color:var(--muted)">Everything is generated client-side in your browser.</p></article>
+      <article><strong>Create without limits</strong><p style="font-size:11px;color:var(--muted)">No accounts, watermarks, or daily quotas.</p></article>
+      <article><strong>Crisp at every size</strong><p style="font-size:11px;color:var(--muted)">Ready for labels, posters, packaging, and print.</p></article>
     </section>
 
     <footer class="site-footer">
-      <p>© <span id="yr">2026</span> QBar Code Studio · Small Codes. Big Possibilities.</p>
+      <p>&copy; 2026 QBar Code Studio · Small Codes. Big Possibilities.</p>
       <span>Client-side &amp; Private</span>
     </footer>
   </main>
 
+  <!-- Help / How it works dialog (Includes barcode format guide) -->
+  <dialog class="info-dialog" id="help-dialog">
+    <div class="dialog-top">
+      <span class="dialog-eyebrow">QBAR CODE STUDIO</span>
+      <button type="button" class="dialog-close" onclick="document.getElementById('help-dialog').close()">&times;</button>
+    </div>
+    <h2 style="font-family:var(--heading);font-size:22px;margin:0 0 8px;">How It Works</h2>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:14px;">From idea to downloadable code in three easy steps:</p>
+    <ol class="help-steps">
+      <li><span class="step-number">1</span><div><strong>Select code &amp; enter data</strong><p style="font-size:11px;color:var(--muted)">Choose QR Code or Barcode and fill in your text, URL or numbers.</p></div></li>
+      <li><span class="step-number">2</span><div><strong>Preview instantly</strong><p style="font-size:11px;color:var(--muted)">Your code generates directly in real time on your machine.</p></div></li>
+      <li><span class="step-number">3</span><div><strong>Download &amp; use</strong><p style="font-size:11px;color:var(--muted)">Save high-resolution PNG or SVG vectors ready for production.</p></div></li>
+    </ol>
+    <h3 style="font-family:var(--heading);font-size:15px;margin:18px 0 6px;">Barcode Formats &amp; Rules</h3>
+    <div class="guide-card-mini"><strong>CODE128</strong><p style="font-size:10px;color:var(--muted)">Universal letters, digits, and punctuation. Sample: <code>QBAR-128</code></p><svg class="dialog-bc" data-fmt="CODE128" data-val="QBAR-128"></svg></div>
+    <div class="guide-card-mini"><strong>CODE39</strong><p style="font-size:10px;color:var(--muted)">Uppercase A-Z and digits. Sample: <code>QBAR-39</code></p><svg class="dialog-bc" data-fmt="CODE39" data-val="QBAR-39"></svg></div>
+    <div class="guide-card-mini"><strong>Codabar</strong><p style="font-size:10px;color:var(--muted)">Libraries &amp; medical tracking. Sample: <code>A12345B</code></p><svg class="dialog-bc" data-fmt="codabar" data-val="A12345B"></svg></div>
+    <div class="guide-card-mini"><strong>EAN-13</strong><p style="font-size:10px;color:var(--muted)">Retail items (12-13 digits). Sample: <code>5901234123457</code></p><svg class="dialog-bc" data-fmt="EAN13" data-val="5901234123457"></svg></div>
+    <div class="guide-card-mini"><strong>EAN-8</strong><p style="font-size:10px;color:var(--muted)">Small packaging (7-8 digits). Sample: <code>96385074</code></p><svg class="dialog-bc" data-fmt="EAN8" data-val="96385074"></svg></div>
+    <div class="guide-card-mini"><strong>UPC-A</strong><p style="font-size:10px;color:var(--muted)">Standard retail (11-12 digits). Sample: <code>036000291452</code></p><svg class="dialog-bc" data-fmt="UPC" data-val="036000291452"></svg></div>
+    <div class="guide-card-mini"><strong>UPC-E</strong><p style="font-size:10px;color:var(--muted)">Compact retail (6-8 digits). Sample: <code>04252614</code></p><svg class="dialog-bc" data-fmt="UPCE" data-val="04252614"></svg></div>
+    <div class="guide-card-mini"><strong>ITF</strong><p style="font-size:10px;color:var(--muted)">Even number of numeric digits. Sample: <code>12345678</code></p><svg class="dialog-bc" data-fmt="ITF" data-val="12345678"></svg></div>
+    <div class="guide-card-mini"><strong>ITF-14</strong><p style="font-size:10px;color:var(--muted)">Outer shipping carton (13-14 digits). Sample: <code>15400141288763</code></p><svg class="dialog-bc" data-fmt="ITF14" data-val="15400141288763"></svg></div>
+    <div class="guide-card-mini"><strong>Pharmacode</strong><p style="font-size:10px;color:var(--muted)">Pharmaceutical code (3-131070). Sample: <code>1234</code></p><svg class="dialog-bc" data-fmt="pharmacode" data-val="1234"></svg></div>
+  </dialog>
+
   <script>
     let qrInst = null;
+    const SAMPLE_VALS = {
+      CODE128: 'QBAR-128', CODE39: 'QBAR-39', codabar: 'A12345B',
+      EAN13: '5901234123457', EAN8: '96385074', UPC: '036000291452',
+      UPCE: '04252614', ITF: '12345678', ITF14: '15400141288763', pharmacode: '1234'
+    };
+    function autoFormatExample() {
+      const fmt = document.getElementById('bc-format').value;
+      if (SAMPLE_VALS[fmt]) document.getElementById('bc-input').value = SAMPLE_VALS[fmt];
+      makeBc();
+    }
     function setTab(tab) {
       document.getElementById('panel-qr').style.display = tab === 'qr' ? 'grid' : 'none';
       document.getElementById('panel-barcode').style.display = tab === 'barcode' ? 'grid' : 'none';
@@ -262,6 +303,7 @@ input.content-input { height: 46px; padding: 11px 12px; }
       document.getElementById('tab-barcode').setAttribute('aria-selected', tab === 'barcode');
       if (tab === 'barcode') makeBc();
     }
+    function setQrVal(v) { document.getElementById('qr-input').value = v; makeQr(); }
     function makeQr() {
       const val = document.getElementById('qr-input').value.trim() || 'https://example.com';
       const container = document.getElementById('qr-code');
@@ -280,7 +322,7 @@ input.content-input { height: 46px; padding: 11px 12px; }
       try {
         JsBarcode('#bc-preview', val, { format: fmt, lineColor: '#243128', width: 2, height: 60, displayValue: true });
       } catch (e) {
-        alert('Invalid input for selected barcode format.');
+        alert('Invalid input for selected format (' + fmt + '). Check character and length requirements.');
       }
     }
     function dlBc() {
@@ -291,9 +333,9 @@ input.content-input { height: 46px; padding: 11px 12px; }
     }
     window.addEventListener('DOMContentLoaded', () => {
       makeQr();
-      document.querySelectorAll('.bc-guide-img').forEach(el => {
+      document.querySelectorAll('.dialog-bc').forEach(svg => {
         try {
-          JsBarcode(el, el.dataset.value, { format: el.dataset.format, width: 1.5, height: 36, margin: 4, displayValue: true, fontSize: 10, lineColor: '#285a43' });
+          JsBarcode(svg, svg.dataset.val, { format: svg.dataset.fmt, width: 1.5, height: 32, margin: 2, displayValue: true, fontSize: 9, lineColor: '#285a43' });
         } catch (e) {}
       });
     });
@@ -301,12 +343,16 @@ input.content-input { height: 46px; padding: 11px 12px; }
 </body>
 </html>`,
 
+    /* =========================================================================
+       DARK THEME (Exact cyber-neon styling, bottom guidelines removed, 
+       identical "How it works" popup added, tested code generation)
+       ========================================================================= */
     dark: `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QBar Code Studio - All-in-One QR Code & Barcode Generator</title>
+  <title>QBar Code Studio — All-in-One QR Code & Barcode Generator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -336,15 +382,21 @@ input.content-input { height: 46px; padding: 11px 12px; }
     }
     .glass-card { background: rgba(18, 22, 37, 0.82); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.12); }
     .glass-input { background: rgba(10, 13, 22, 0.65); border: 1.5px solid rgba(255, 255, 255, 0.15); outline: none; }
+    .glass-input:focus { border-color: #00F0FF; box-shadow: 0 0 15px rgba(0, 240, 255, 0.25); }
     .btn-gradient { background: linear-gradient(135deg, #FF2E93 0%, #7000FF 50%, #00F0FF 100%); transition: all 0.3s ease; }
     .btn-gradient:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(255, 46, 147, 0.5); }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
+    .color-option.selected { border-color: #00F0FF; box-shadow: 0 0 10px rgba(0, 240, 255, 0.6); }
+
+    /* Modal styling for dark mode */
+    .info-dialog-dark { width: min(520px, 100% - 32px); max-height: calc(100dvh - 40px); padding: 28px; overflow-y: auto; border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 20px; background: #0f1423; color: #f1f5f9; box-shadow: 0 25px 90px rgba(0,0,0,0.7); }
+    .info-dialog-dark::backdrop { background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); }
   </style>
 </head>
 <body class="text-slate-100 flex flex-col justify-between min-h-screen p-4 sm:p-8">
   <main class="w-full max-w-4xl mx-auto my-auto z-10">
-    <header class="text-center mb-8">
+    <header class="text-center mb-8 relative">
       <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-card text-brand-cyan text-xs font-semibold uppercase mb-3 border border-brand-cyan/30">
         <i class="fa-solid fa-wand-magic-sparkles text-brand-yellow"></i> All-in-One Generator
       </div>
@@ -356,9 +408,16 @@ input.content-input { height: 46px; padding: 11px 12px; }
       <p class="text-slate-400 text-sm max-w-lg mx-auto">
         Instant, high-resolution QR codes &amp; barcodes. 100% Free &amp; Unlimited.
       </p>
+      <!-- "How it works" button in Dark Mode -->
+      <div class="mt-3">
+        <button type="button" onclick="document.getElementById('help-dialog-dark').showModal()" class="text-xs text-brand-cyan hover:underline inline-flex items-center gap-1.5 font-medium">
+          <i class="fa-solid fa-circle-question"></i> How it works &amp; format guide &nearr;
+        </button>
+      </div>
     </header>
 
     <div class="glass-card rounded-3xl p-6 sm:p-10 shadow-2xl">
+      <!-- Tabs Switcher -->
       <div class="flex items-center justify-center p-1.5 bg-slate-950/80 rounded-2xl border border-slate-800 mb-8 max-w-md mx-auto">
         <button id="tab-btn-qr" onclick="switchTab('qr')" class="flex-1 py-3 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 bg-gradient-to-r from-brand-pink to-brand-violet text-white">
           <i class="fa-solid fa-qrcode"></i> QR Code
@@ -374,7 +433,16 @@ input.content-input { height: 46px; padding: 11px 12px; }
           <div class="lg:col-span-7 space-y-4">
             <label class="text-xs font-bold uppercase tracking-wider text-slate-300">Content or URL</label>
             <input type="text" id="qr-input" value="https://github.com" class="glass-input w-full px-4 py-3 rounded-2xl text-slate-100 text-sm" />
-            <button onclick="genQr()" class="btn-gradient w-full py-4 rounded-2xl font-bold text-white text-sm">Generate QR Code</button>
+            
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300">Color Preset</label>
+            <div class="flex gap-2">
+              <button type="button" class="color-option selected px-3 py-1.5 rounded-xl border border-slate-700 bg-slate-900 text-xs" onclick="setQrColor('#0f172a', this)">Classic</button>
+              <button type="button" class="color-option px-3 py-1.5 rounded-xl border border-slate-700 bg-slate-900 text-xs text-brand-pink" onclick="setQrColor('#FF2E93', this)">Neon</button>
+              <button type="button" class="color-option px-3 py-1.5 rounded-xl border border-slate-700 bg-slate-900 text-xs text-brand-violet" onclick="setQrColor('#7000FF', this)">Violet</button>
+              <button type="button" class="color-option px-3 py-1.5 rounded-xl border border-slate-700 bg-slate-900 text-xs text-brand-cyan" onclick="setQrColor('#00F0FF', this)">Cyan</button>
+            </div>
+
+            <button onclick="genQr()" class="btn-gradient w-full py-4 rounded-2xl font-bold text-white text-sm mt-3">Generate QR Code</button>
           </div>
           <div class="lg:col-span-5 flex flex-col items-center justify-center p-6 bg-slate-900/90 rounded-3xl border border-slate-800">
             <div id="qr-target" class="p-4 bg-white rounded-2xl"></div>
@@ -389,18 +457,18 @@ input.content-input { height: 46px; padding: 11px 12px; }
           <div class="lg:col-span-7 space-y-4">
             <label class="text-xs font-bold uppercase tracking-wider text-slate-300">Barcode Content</label>
             <input type="text" id="bc-input" value="QBAR-128" class="glass-input w-full px-4 py-3 rounded-2xl text-slate-100 text-sm" />
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mt-2">Format</label>
-            <select id="bc-fmt" onchange="genBc()" class="glass-input w-full px-4 py-3 rounded-2xl text-slate-100 text-sm">
-              <option value="CODE128">CODE128</option>
-              <option value="CODE39">CODE39</option>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300">Format</label>
+            <select id="bc-fmt" onchange="autoFormatExampleDark()" class="glass-input w-full px-4 py-3 rounded-2xl text-slate-100 text-sm">
+              <option value="CODE128">CODE128 (Universal)</option>
+              <option value="CODE39">CODE39 (Uppercase/Numbers)</option>
               <option value="codabar">Codabar</option>
-              <option value="EAN13">EAN-13</option>
-              <option value="EAN8">EAN-8</option>
-              <option value="UPC">UPC-A</option>
-              <option value="UPCE">UPC-E</option>
-              <option value="ITF">ITF</option>
-              <option value="ITF14">ITF-14</option>
-              <option value="pharmacode">Pharmacode</option>
+              <option value="EAN13">EAN-13 (12 or 13 Digits)</option>
+              <option value="EAN8">EAN-8 (7 or 8 Digits)</option>
+              <option value="UPC">UPC-A (11 or 12 Digits)</option>
+              <option value="UPCE">UPC-E (6 or 8 Digits)</option>
+              <option value="ITF">ITF (Even Digits)</option>
+              <option value="ITF14">ITF-14 (13 or 14 Digits)</option>
+              <option value="pharmacode">Pharmacode (3-131070)</option>
             </select>
             <button onclick="genBc()" class="btn-gradient w-full py-4 rounded-2xl font-bold text-white text-sm">Generate Barcode</button>
           </div>
@@ -412,13 +480,51 @@ input.content-input { height: 46px; padding: 11px 12px; }
       </div>
     </div>
 
+    <!-- NOTE: The extra barcode guide that was previously at the bottom has been completely REMOVED -->
+
     <footer class="mt-8 text-center text-xs text-slate-500">
-      © 2026 QBar Code Studio · Fast, Client-Side, &amp; Unlimited
+      &copy; 2026 QBar Code Studio · Fast, Client-Side, &amp; Unlimited
     </footer>
   </main>
 
+  <!-- "How it works" Dialog for Dark Theme -->
+  <dialog class="info-dialog-dark" id="help-dialog-dark">
+    <div class="flex items-center justify-between mb-4">
+      <span class="text-xs font-bold tracking-wider text-brand-cyan uppercase">QBar Code Studio</span>
+      <button type="button" class="text-xl text-slate-400 hover:text-white" onclick="document.getElementById('help-dialog-dark').close()">&times;</button>
+    </div>
+    <h2 class="text-xl font-bold text-white mb-2">How It Works</h2>
+    <p class="text-xs text-slate-400 mb-4">Fast 3-step creation directly in your web browser:</p>
+    <div class="space-y-3 text-xs mb-6">
+      <div class="flex gap-2.5 items-start"><span class="px-2 py-0.5 rounded bg-brand-pink/20 text-brand-pink font-bold">1</span><span><strong>Add your data:</strong> Enter links, text, or serial numbers.</span></div>
+      <div class="flex gap-2.5 items-start"><span class="px-2 py-0.5 rounded bg-brand-violet/20 text-brand-cyan font-bold">2</span><span><strong>Pick your format:</strong> Choose QR code or from 10 distinct standard barcodes.</span></div>
+      <div class="flex gap-2.5 items-start"><span class="px-2 py-0.5 rounded bg-brand-yellow/20 text-brand-yellow font-bold">3</span><span><strong>Export:</strong> Download instant print-ready PNG or SVG files.</span></div>
+    </div>
+    <h3 class="text-sm font-bold text-white mb-2 border-t border-slate-800 pt-3">Supported Barcode Formats</h3>
+    <ul class="text-xs text-slate-300 space-y-2 max-h-48 overflow-y-auto pr-1">
+      <li><strong>CODE128:</strong> Universal letters, numbers, symbols (shipping &amp; labels).</li>
+      <li><strong>CODE39:</strong> Capital letters &amp; numbers for assets and warehouses.</li>
+      <li><strong>Codabar:</strong> Specialized tracking in blood banks and libraries.</li>
+      <li><strong>EAN-13 &amp; EAN-8:</strong> Standard retail products worldwide.</li>
+      <li><strong>UPC-A &amp; UPC-E:</strong> North American standard packaging.</li>
+      <li><strong>ITF &amp; ITF-14:</strong> Logistics cartons and shipping master cases.</li>
+      <li><strong>Pharmacode:</strong> Packaging verification numbers (3 to 131070).</li>
+    </ul>
+  </dialog>
+
   <script>
     let qr = null;
+    let currentColor = '#0f172a';
+    const SAMPLE_VALS = {
+      CODE128: 'QBAR-128', CODE39: 'QBAR-39', codabar: 'A12345B',
+      EAN13: '5901234123457', EAN8: '96385074', UPC: '036000291452',
+      UPCE: '04252614', ITF: '12345678', ITF14: '15400141288763', pharmacode: '1234'
+    };
+    function autoFormatExampleDark() {
+      const fmt = document.getElementById('bc-fmt').value;
+      if (SAMPLE_VALS[fmt]) document.getElementById('bc-input').value = SAMPLE_VALS[fmt];
+      genBc();
+    }
     function switchTab(t) {
       document.getElementById('tab-qr').className = t === 'qr' ? 'tab-content active' : 'tab-content';
       document.getElementById('tab-barcode').className = t === 'barcode' ? 'tab-content active' : 'tab-content';
@@ -426,13 +532,19 @@ input.content-input { height: 46px; padding: 11px 12px; }
       document.getElementById('tab-btn-barcode').className = t === 'barcode' ? 'flex-1 py-3 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 bg-gradient-to-r from-brand-pink to-brand-violet text-white' : 'flex-1 py-3 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 text-slate-400 hover:text-white';
       if (t === 'barcode') genBc();
     }
+    function setQrColor(col, btn) {
+      document.querySelectorAll('.color-option').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      currentColor = col;
+      genQr();
+    }
     function genQr() {
       const val = document.getElementById('qr-input').value.trim() || 'https://github.com';
       const container = document.getElementById('qr-target');
       container.innerHTML = '';
       qr = new QRCodeStyling({
         width: 200, height: 200, type: 'svg', data: val,
-        dotsOptions: { color: '#0f172a', type: 'rounded' },
+        dotsOptions: { color: currentColor, type: 'rounded' },
         backgroundOptions: { color: '#ffffff' }
       });
       qr.append(container);
@@ -443,7 +555,9 @@ input.content-input { height: 46px; padding: 11px 12px; }
       const fmt = document.getElementById('bc-fmt').value;
       try {
         JsBarcode('#bc-svg', val, { format: fmt, lineColor: '#0f172a', width: 2, height: 60, displayValue: true });
-      } catch (e) { alert('Invalid input for selected format.'); }
+      } catch (e) {
+        alert('Invalid input for selected format (' + fmt + '). Check character and length rules.');
+      }
     }
     function dlBc() {
       const svg = document.getElementById('bc-svg');
