@@ -12,7 +12,7 @@ const context = vm.createContext({esc: escapeHTML});
 const pagesStart = source.indexOf('const pages=');
 const helpersStart = source.indexOf('const field=', pagesStart);
 const helpersEnd = source.indexOf("const appearanceKey=", helpersStart);
-const formsStart = source.indexOf('function pageForm(');
+const formsStart = source.indexOf('function homeTools(');
 const formsEnd = source.indexOf("let path='/'", formsStart);
 if ([pagesStart, helpersStart, helpersEnd, formsStart, formsEnd].some(i => i < 0)) throw Error('Application template markers changed');
 vm.runInContext(source.slice(pagesStart, helpersStart) + source.slice(helpersStart, helpersEnd) + source.slice(formsStart, formsEnd) + '\nglobalThis.routes=pages;globalThis.render=pageForm;', context);
