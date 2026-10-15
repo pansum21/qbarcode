@@ -1,0 +1,14 @@
+
+{
+  "rewrites": [
+    {
+      "source": "/account",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/projects",
+      "destination": "/index.html"
+    }
+  ]
+}
+
