@@ -1,14 +1,103 @@
-
 {
+  "buildCommand": "node scripts/build-site.cjs",
+  "outputDirectory": "dist",
   "rewrites": [
     {
       "source": "/account",
-      "destination": "/index.html"
+      "destination": "/pages/account.html"
+    },
+    {
+      "source": "/feedback",
+      "destination": "/pages/feedback.html"
+    },
+    {
+      "source": "/admin",
+      "destination": "/pages/admin.html"
+    },
+    {
+      "source": "/scan",
+      "destination": "/pages/scan.html"
+    },
+    {
+      "source": "/settings",
+      "destination": "/pages/settings.html"
+    },
+    {
+      "source": "/qr/logo-styling",
+      "destination": "/pages/qr/logo-styling.html"
+    },
+    {
+      "source": "/qr/wifi-vcard",
+      "destination": "/pages/qr/wifi-vcard.html"
+    },
+    {
+      "source": "/qr/business",
+      "destination": "/pages/qr/business.html"
+    },
+    {
+      "source": "/qr/campaign",
+      "destination": "/pages/qr/campaign.html"
+    },
+    {
+      "source": "/barcode",
+      "destination": "/pages/barcode.html"
+    },
+    {
+      "source": "/barcode/bulk",
+      "destination": "/pages/barcode/bulk.html"
     },
     {
       "source": "/projects",
-      "destination": "/index.html"
+      "destination": "/pages/projects.html"
+    },
+    {
+      "source": "/help",
+      "destination": "/pages/help.html"
+    },
+    {
+      "source": "/about",
+      "destination": "/pages/about.html"
+    },
+    {
+      "source": "/features",
+      "destination": "/pages/features.html"
+    },
+    {
+      "source": "/privacy",
+      "destination": "/pages/privacy.html"
+    },
+    {
+      "source": "/terms",
+      "destination": "/pages/terms.html"
+    },
+    {
+      "source": "/contact",
+      "destination": "/pages/contact.html"
+    },
+    {
+      "source": "/inventory/labels",
+      "destination": "/pages/barcode/bulk.html"
+    },
+    {
+      "source": "/inventory/stock",
+      "destination": "/pages/barcode/bulk.html"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/about.html",
+      "destination": "/about",
+      "permanent": true
+    },
+    {
+      "source": "/privacy.html",
+      "destination": "/privacy",
+      "permanent": true
+    },
+    {
+      "source": "/terms.html",
+      "destination": "/terms",
+      "permanent": true
     }
   ]
 }
-
