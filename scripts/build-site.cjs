@@ -3,6 +3,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
+const crypto = require('node:crypto');
 const root = path.resolve(__dirname, '..');
 const source = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const out = path.join(root, 'dist');
@@ -25,13 +26,35 @@ for (const name of fs.readdirSync(root)) {
 const logo = source.match(/<img src="data:image\/(webp|png);base64,([^"]+)"[^>]*class="brand-logo"/);
 if (!logo) throw Error('Existing brand logo not found');
 fs.writeFileSync(path.join(out, 'qbar-logo.' + logo[1]), Buffer.from(logo[2], 'base64'));
+// One shared logo replaces both embedded copies, including the export branding.
+// Content-addressed assets can be cached across routes without serving stale code.
+const assets = path.join(out, 'assets');
+fs.mkdirSync(assets, {recursive: true});
+function writeAsset(name, extension, content) {
+  const hash = crypto.createHash('sha256').update(content).digest('hex').slice(0, 16);
+  const url = '/assets/' + name + '.' + hash + '.' + extension;
+  fs.writeFileSync(path.join(out, url), content);
+  return url;
+}
+const logoURL = writeAsset('qbar-logo', logo[1], Buffer.from(logo[2], 'base64'));
+let template = source.split('data:image/' + logo[1] + ';base64,' + logo[2]).join(logoURL);
+// Keep all classic scripts together: function hoisting is needed by account
+// navigation on direct entry. Defer preserves DOM readiness and dependency order.
+const scripts = [];
+template = template.replace(/<script\b([^>]*)>([\s\S]*?)<\/script>/g, (tag, attributes, body) => {
+  if (/\bsrc\s*=|\btype\s*=/.test(attributes) || !body.trim()) return tag;
+  scripts.push(body);
+  return '';
+});
+const scriptURL = writeAsset('qbar-app', 'js', scripts.join('\n;\n'));
+template = template.replace('</body>', '<script defer src="' + scriptURL + '"></script></body>');
 const publicRoutes = [];
 const rewrites = [];
 for (const [route, [label, description]] of Object.entries(context.routes)) {
   const title = (route === '/' ? 'Free QR Code & Barcode Generator Online' : label) + ' | QBar Code Studio';
   const canonical = 'https://qbarcode.vercel.app' + route;
   const robots = privateRoutes.has(route) ? 'noindex,follow' : 'index,follow';
-  let html = source.replace(/<title>[^<]*<\/title>/, '<title>' + escapeHTML(title) + '</title>')
+  let html = template.replace(/<title>[^<]*<\/title>/, '<title>' + escapeHTML(title) + '</title>')
     .replace(/(<meta name="description" content=")[^"]*/, '$1' + escapeHTML(description))
     .replace(/(<meta name="robots" content=")[^"]*/, '$1' + robots)
     .replace(/(<link rel="canonical" href=")[^"]*/, '$1' + canonical)
