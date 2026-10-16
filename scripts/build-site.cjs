@@ -66,6 +66,7 @@ for (const [route, [label, description]] of Object.entries(context.routes)) {
     ? '<section class="hero"><div class="eyebrow">✧ LESS TYPING. MORE CONNECTING.</div><h1>Big ideas. <em>Small codes.</em></h1><p>Make anything scannable. Free QR codes &amp; barcodes, in a few clicks.</p></section>'
     : '<div class="intro"><div class="eyebrow">QBar Code Studio</div><h1>' + escapeHTML(label) + '</h1><p>' + escapeHTML(description) + '</p></div>';
   html = html.replace('<main class="main" id="main" tabindex="-1"></main>', '<main class="main" id="main" tabindex="-1">' + intro + context.render(route) + '<noscript><p>Enable JavaScript to generate, scan and download codes.</p></noscript></main>');
+  html = html.replace('<body', '<body data-page="' + route + '"');
   // Preserve existing about.html/privacy.html/terms.html URLs as redirects below.
   const filename = route === '/' ? 'index.html' : 'pages' + route + '.html';
   fs.mkdirSync(path.dirname(path.join(out, filename)), {recursive: true});

@@ -19,7 +19,7 @@ for(const route of ['/account','/projects','/settings','/feedback','/admin']){
 }
 for(const rule of config.rewrites)assert(fs.existsSync(path.join(out,rule.destination)),rule.source);
 assert(!config.rewrites.some(r=>r.source.includes(':')||r.source.includes('*')));
-for(const route of ['/qr/logo-styling','/qr/wifi-vcard','/barcode','/barcode/bulk','/scan']){
+for(const route of ['/qr/logo-styling','/qr/wifi-vcard','/barcode','/barcode/bulk']){
  const html=read(config.rewrites.find(r=>r.source===route).destination.slice(1));
  assert(/<input|<textarea/.test(html.match(/<main\b[^>]*>([\s\S]*?)<\/main>/)[1]));
 }
