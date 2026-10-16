@@ -38,6 +38,11 @@ function writeAsset(name, extension, content) {
 }
 const logoURL = writeAsset('qbar-logo', logo[1], Buffer.from(logo[2], 'base64'));
 let template = source.split('data:image/' + logo[1] + ';base64,' + logo[2]).join(logoURL);
+// Cache the small brand-name font locally; no third-party font request at runtime.
+const fontMatch = template.match(/data:font\/woff;base64,([A-Za-z0-9+/=]+)/);
+if (!fontMatch) throw Error('Brand font missing');
+const fontURL = writeAsset('cinzel-decorative-brand', 'woff', Buffer.from(fontMatch[1], 'base64'));
+template = template.replace(fontMatch[0], fontURL);
 // Keep all classic scripts together: function hoisting is needed by account
 // navigation on direct entry. Defer preserves DOM readiness and dependency order.
 const scripts = [];
