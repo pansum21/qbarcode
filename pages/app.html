@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Opening App… | QBar Code Studio</title>
+  <meta name="robots" content="noindex, follow">
+  <style>
+    :root {
+      font-family: Inter, system-ui, -apple-system, sans-serif;
+      --bg: #f5f7f3;
+      --card: #ffffff;
+      --text: #1e3026;
+      --muted: #637466;
+      --line: #dce6db;
+      --accent: #285a43;
+      --soft: #e9f2e9;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #10151b;
+        --card: #1b242d;
+        --text: #edf4f2;
+        --muted: #b0c0c6;
+        --line: #364550;
+        --accent: #79cfa9;
+        --soft: #253c37;
+      }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 32px 28px;
+      max-width: 440px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    }
+    .icon-box {
+      width: 64px;
+      height: 64px;
+      background: var(--soft);
+      border-radius: 16px;
+      display: inline-grid;
+      place-items: center;
+      font-size: 32px;
+      margin-bottom: 16px;
+    }
+    h1 {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+    p {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 13px 18px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 14px;
+      text-decoration: none;
+      transition: opacity 0.15s ease;
+      cursor: pointer;
+    }
+    .btn:hover { opacity: 0.9; }
+    .btn-apple {
+      background: #000;
+      color: #fff;
+    }
+    .btn-google {
+      background: #01875f;
+      color: #fff;
+    }
+    .btn-web {
+      background: var(--soft);
+      color: var(--accent);
+      border: 1px solid var(--line);
+    }
+    .footer {
+      margin-top: 28px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .footer a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="icon-box">📲</div>
+    <h1 id="title">Redirecting to App…</h1>
+    <p id="desc">Detecting your device and opening the appropriate app store.</p>
+    
+    <div class="btn-group" id="btnGroup">
+      <a id="btnApple" class="btn btn-apple" href="#" style="display:none"> Download on App Store</a>
+      <a id="btnGoogle" class="btn btn-google" href="#" style="display:none">▶ Get it on Google Play</a>
+      <a id="btnWeb" class="btn btn-web" href="#" style="display:none">🌐 Open Website</a>
+    </div>
+
+    <div class="footer">
+      Powered by <a href="/">QBar Code Studio</a>
+    </div>
+  </main>
+
+  <script>
+    (function() {
+      const params = new URLSearchParams(window.location.search);
+      const ios = params.get('ios') || '';
+      const android = params.get('android') || '';
+      const web = params.get('web') || '';
+      const ua = navigator.userAgent || '';
+
+      const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      const isAndroid = /Android/i.test(ua);
+
+      const btnApple = document.getElementById('btnApple');
+      const btnGoogle = document.getElementById('btnGoogle');
+      const btnWeb = document.getElementById('btnWeb');
+
+      if (ios) {
+        btnApple.href = ios;
+        btnApple.style.display = 'flex';
+      }
+      if (android) {
+        btnGoogle.href = android;
+        btnGoogle.style.display = 'flex';
+      }
+      if (web) {
+        btnWeb.href = web;
+        btnWeb.style.display = 'flex';
+      }
+
+      let targetUrl = '';
+      if (isIOS && ios) {
+        targetUrl = ios;
+      } else if (isAndroid && android) {
+        targetUrl = android;
+      } else if (web) {
+        targetUrl = web;
+      } else if (android) {
+        targetUrl = android;
+      } else if (ios) {
+        targetUrl = ios;
+      }
+
+      if (targetUrl) {
+        try {
+          window.location.replace(targetUrl);
+        } catch (e) {
+          window.location.href = targetUrl;
+        }
+      } else {
+        document.getElementById('title').textContent = 'Select Your Platform';
+        document.getElementById('desc').textContent = 'Please choose your platform from the options below:';
+      }
+    })();
+  </script>
+</body>
+</html>

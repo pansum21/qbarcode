@@ -19,9 +19,14 @@ vm.runInContext(source.slice(pagesStart, helpersStart) + source.slice(helpersSta
 const privateRoutes = new Set(['/account', '/projects', '/settings', '/feedback', '/admin']);
 fs.rmSync(out, {recursive: true, force: true});
 fs.mkdirSync(out, {recursive: true});
-// Retain verification, ads, robots and existing standalone documents.
+// Retain verification, ads, robots, manifest, service worker and standalone docs.
 for (const name of fs.readdirSync(root)) {
-  if (/\.(html|txt|png|webp|ico|svg)$/.test(name) && name !== 'index.html') fs.copyFileSync(path.join(root, name), path.join(out, name));
+  if (/\.(html|txt|png|webp|ico|svg|json|webmanifest)$/.test(name) && name !== 'index.html') {
+    fs.copyFileSync(path.join(root, name), path.join(out, name));
+  }
+  if (name === 'sw.js') {
+    fs.copyFileSync(path.join(root, name), path.join(out, name));
+  }
 }
 const logo = source.match(/<img src="data:image\/(webp|png);base64,([^"]+)"[^>]*class="brand-logo"/);
 if (!logo) throw Error('Existing brand logo not found');
@@ -120,6 +125,11 @@ for (const [route, [label, description]] of Object.entries(context.routes)) {
   if (!privateRoutes.has(route)) publicRoutes.push(canonical);
 }
 for (const alias of ['/inventory/labels', '/inventory/stock']) rewrites.push({source: alias, destination: '/pages/barcode/bulk.html'});
+if (fs.existsSync(path.join(root, 'pages', 'app.html'))) {
+  fs.mkdirSync(path.join(out, 'pages'), {recursive: true});
+  fs.copyFileSync(path.join(root, 'pages', 'app.html'), path.join(out, 'pages', 'app.html'));
+  rewrites.push({source: '/app', destination: '/pages/app.html'});
+}
 fs.writeFileSync(path.join(out, 'sitemap.xml'), '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + publicRoutes.map(url => '  <url><loc>' + url + '</loc></url>').join('\n') + '\n</urlset>\n');
 const config = JSON.parse(fs.readFileSync(path.join(root, 'vercel.json'), 'utf8'));
 if (JSON.stringify(config.rewrites) !== JSON.stringify(rewrites)) throw Error('Vercel routes do not match the application routes');
