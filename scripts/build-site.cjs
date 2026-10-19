@@ -21,10 +21,7 @@ fs.rmSync(out, {recursive: true, force: true});
 fs.mkdirSync(out, {recursive: true});
 // Retain verification, ads, robots, manifest, service worker and standalone docs.
 for (const name of fs.readdirSync(root)) {
-  if (/\.(html|txt|png|webp|ico|svg|json|webmanifest)$/.test(name) && name !== 'index.html') {
-    fs.copyFileSync(path.join(root, name), path.join(out, name));
-  }
-  if (name === 'sw.js') {
+  if (/\.(html|txt|png|webp|ico|svg|json|webmanifest|js)$/.test(name) && name !== 'index.html') {
     fs.copyFileSync(path.join(root, name), path.join(out, name));
   }
 }

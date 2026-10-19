@@ -1,9 +1,10 @@
-const CACHE_NAME = 'qbar-studio-v1';
+const CACHE_NAME = 'qbar-studio-v2';
 const CORE_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/qbar-logo.webp'
+  '/qbar-logo.webp',
+  '/jsqr.min.js'
 ];
 
 self.addEventListener('install', (event) => {
