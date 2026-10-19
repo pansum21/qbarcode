@@ -66,11 +66,51 @@ for (const [route, [label, description]] of Object.entries(context.routes)) {
     .replace(/(<meta property="og:title" content=")[^"]*/, '$1' + escapeHTML(title))
     .replace(/(<meta property="og:description" content=")[^"]*/, '$1' + escapeHTML(description))
     .replace(/(<meta property="og:url" content=")[^"]*/, '$1' + canonical)
-    .replace('https://qbarcode.vercel.app/qbar-logo.png', 'https://qbarcode.vercel.app/qbar-logo.' + logo[1]);
+    .replace(/(<meta name="twitter:title" content=")[^"]*/, '$1' + escapeHTML(title))
+    .replace(/(<meta name="twitter:description" content=")[^"]*/, '$1' + escapeHTML(description))
+    .split('https://qbarcode.vercel.app/qbar-logo.png').join('https://qbarcode.vercel.app/qbar-logo.' + logo[1]);
   const intro = route === '/'
-    ? '<section class="hero"><div class="eyebrow">✧ LESS TYPING. MORE CONNECTING.</div><h1>Big ideas. <em>Small codes.</em></h1><p>Make anything scannable. Free QR codes &amp; barcodes, in a few clicks.</p></section>'
+    ? '<section class="hero"><div class="eyebrow">✧ FREE QR CODE &amp; BARCODE GENERATOR</div><h1>Free Online <em>QR Code &amp; Barcode</em> Studio</h1><p>Create custom branded QR codes with logo styling, 1D/2D retail barcodes (CODE128, EAN-13, UPC-A, Code 39), bulk printable label sheets, and high-resolution vector SVG and PNG downloads.</p></section>'
     : '<div class="intro"><div class="eyebrow">QBar Code Studio</div><h1>' + escapeHTML(label) + '</h1><p>' + escapeHTML(description) + '</p></div>';
-  html = html.replace('<main class="main" id="main" tabindex="-1"></main>', '<main class="main" id="main" tabindex="-1">' + intro + context.render(route) + '<noscript><p>Enable JavaScript to generate, scan and download codes.</p></noscript></main>');
+  const seoGuide = route === '/' ? `
+<section class="info" style="margin-top:32px;border-radius:14px;line-height:1.7;">
+  <h2 style="font-size:22px;margin-bottom:12px;color:var(--text);">All-in-One Free Online QR Code &amp; Barcode Generator</h2>
+  <p>QBar Code Studio is an advanced web-based generator and real-time camera scanner designed for small businesses, warehouses, developers, and educators. Generate customizable vector barcodes and QR codes directly in your browser with zero sign-up required, no paywalls, and unlimited high-resolution downloads.</p>
+  
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-top:20px;">
+    <div style="background:var(--soft);padding:18px;border-radius:10px;border:1px solid var(--line);">
+      <h3 style="margin-top:0;font-size:16px;color:var(--accent);">Custom QR Codes with Logo</h3>
+      <p style="font-size:13px;margin:0;">Create personalized QR codes for website URLs, Wi-Fi network credentials, vCard contact cards, business cards, and marketing campaigns. Embed custom center logos, adjust corner radiuses, pick color palettes, and preview live before downloading.</p>
+    </div>
+    <div style="background:var(--soft);padding:18px;border-radius:10px;border:1px solid var(--line);">
+      <h3 style="margin-top:0;font-size:16px;color:var(--accent);">Retail &amp; Inventory Barcodes</h3>
+      <p style="font-size:13px;margin:0;">Generate standard 1D linear barcodes including CODE128 (logistics and shipping), EAN-13 (international consumer goods), UPC-A (retail POS), Code 39, and ITF-14. Download crisp vector SVG or high-DPI PNG formats ready for thermal printing.</p>
+    </div>
+    <div style="background:var(--soft);padding:18px;border-radius:10px;border:1px solid var(--line);">
+      <h3 style="margin-top:0;font-size:16px;color:var(--accent);">Bulk Printable Label Sheets</h3>
+      <p style="font-size:13px;margin:0;">Prepare multi-row inventory label sheets for stock tracking and warehouse management. Customize label width, height, columns, margins, and print directly to standard A4 or adhesive label paper sheets.</p>
+    </div>
+    <div style="background:var(--soft);padding:18px;border-radius:10px;border:1px solid var(--line);">
+      <h3 style="margin-top:0;font-size:16px;color:var(--accent);">Built-in Live Camera Scanner</h3>
+      <p style="font-size:13px;margin:0;">Scan any QR code or physical barcode instantly using your smartphone or desktop webcam. Decodes URLs, product serial numbers, and contact info in real-time with zero external apps needed.</p>
+    </div>
+  </div>
+
+  <h3 style="font-size:18px;margin-top:28px;margin-bottom:10px;color:var(--text);">Frequently Asked Questions</h3>
+  <details style="margin-bottom:10px;border-bottom:1px solid var(--line);padding-bottom:10px;">
+    <summary style="font-weight:700;cursor:pointer;">Is QBar Code Studio completely free for commercial use?</summary>
+    <p style="font-size:13px;margin-top:8px;">Yes, all generated QR codes and barcodes are 100% free with no expiry date, no scan limits, and no watermarks for personal and commercial projects.</p>
+  </details>
+  <details style="margin-bottom:10px;border-bottom:1px solid var(--line);padding-bottom:10px;">
+    <summary style="font-weight:700;cursor:pointer;">Can I download vector SVG files for professional printing?</summary>
+    <p style="font-size:13px;margin-top:8px;">Yes, every code can be exported as scalable vector SVG or high-resolution PNG, ensuring razor-sharp edges on billboards, product boxes, stickers, or packaging.</p>
+  </details>
+  <details style="margin-bottom:10px;border-bottom:1px solid var(--line);padding-bottom:10px;">
+    <summary style="font-weight:700;cursor:pointer;">Do generated QR codes ever expire?</summary>
+    <p style="font-size:13px;margin-top:8px;">Static QR codes generated with QBar Code Studio encode data directly into the pixel matrix. They work indefinitely and will never expire.</p>
+  </details>
+</section>` : '';
+  html = html.replace('<main class="main" id="main" tabindex="-1"></main>', '<main class="main" id="main" tabindex="-1">' + intro + context.render(route) + seoGuide + '<noscript><p>Enable JavaScript to generate, scan and download codes.</p></noscript></main>');
   html = html.replace('<body', '<body data-page="' + route + '"');
   // Preserve existing about.html/privacy.html/terms.html URLs as redirects below.
   const filename = route === '/' ? 'index.html' : 'pages' + route + '.html';
