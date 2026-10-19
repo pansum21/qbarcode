@@ -71,6 +71,10 @@
       "destination": "/pages/barcode/bulk.html"
     },
     {
+      "source": "/barcode/sheet-scan",
+      "destination": "/pages/barcode/sheet-scan.html"
+    },
+    {
       "source": "/projects",
       "destination": "/pages/projects.html"
     },
