@@ -1,11 +1,4 @@
-self.options = {
-    "domain": "5gvci.com",
-    "zoneId": 12082496
-}
-self.lary = ""
-importScripts('https://5gvci.com/act/files/service-worker.min.js?r=sw')
-
-const CACHE_NAME = 'qbar-studio-v2';
+const CACHE_NAME = 'qbar-studio-v4';
 const CORE_ASSETS = [
   '/',
   '/index.html',
