@@ -211,5 +211,35 @@ if (fs.existsSync(path.join(root, 'pages', 'app.html'))) {
 }
 fs.writeFileSync(path.join(out, 'sitemap.xml'), '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + publicRoutes.map(url => '  <url><loc>' + url + '</loc></url>').join('\n') + '\n</urlset>\n');
 const config = JSON.parse(fs.readFileSync(path.join(root, 'vercel.json'), 'utf8'));
-if (JSON.stringify(config.rewrites) !== JSON.stringify(rewrites)) throw Error('Vercel routes do not match the application routes');
+const biomiRewrites = [
+  {
+    "source": "/biomi/dashboard",
+    "destination": "https://pansum21.github.io/biomi/dashboard.html"
+  },
+  {
+    "source": "/biomi/dashboard.html",
+    "destination": "https://pansum21.github.io/biomi/dashboard.html"
+  },
+  {
+    "source": "/biomi/profile.html",
+    "destination": "https://pansum21.github.io/biomi/profile.html"
+  },
+  {
+    "source": "/biomi/firebase-client.js",
+    "destination": "https://pansum21.github.io/biomi/firebase-client.js"
+  },
+  {
+    "source": "/biomi/firebase-config.js",
+    "destination": "https://pansum21.github.io/biomi/firebase-config.js"
+  },
+  {
+    "source": "/biomi/buttons.css",
+    "destination": "https://pansum21.github.io/biomi/buttons.css"
+  },
+  {
+    "source": "/biomi/:username",
+    "destination": "https://pansum21.github.io/biomi/profile.html"
+  }
+];
+if (JSON.stringify(config.rewrites) !== JSON.stringify([...biomiRewrites, ...rewrites])) throw Error('Vercel routes do not match the application routes');
 console.log('Built ' + Object.keys(context.routes).length + ' pages; sitemap contains ' + publicRoutes.length + ' public URLs.');
