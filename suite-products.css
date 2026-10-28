@@ -19,3 +19,30 @@ body>header>.suite-product-nav{max-width:none}
 body :is(h1,h2,h3){font-family:var(--suite-font)}
 body :is(.header .brand,.studio-brand,.top>.brand){font-family:var(--suite-font)!important;font-weight:800;letter-spacing:-.7px;font-style:normal}
 body :is(.hero h1,.landing-hero h1,.bio-hero-copy h1){font-weight:800}
+
+/* Wide workspaces: use the available viewport instead of a narrow center column. */
+html body .shell>.main{width:100%;max-width:none;padding-inline:clamp(14px,1.5vw,28px)}
+.suite-workspace-products{max-width:none;width:calc(100% - clamp(28px,3vw,56px))}
+.suite-bio-products{max-width:none;width:calc(100% - clamp(28px,3vw,56px))}
+html body .layout{max-width:none;width:100%;margin-inline:0}
+html body .layout>.main{min-width:0;padding-inline:clamp(14px,1.5vw,28px)}
+@media(min-width:900px){
+ html body .shell>.main .workspace{grid-template-columns:minmax(0,72fr) minmax(0,28fr)}
+ html body .shell>.main .preview{min-width:0}
+ html body .shell>.main .preview :is(svg,canvas,img){max-width:100%;height:auto}
+}
+@media(min-width:651px){
+ html body .layout{display:grid;grid-template-columns:minmax(0,72fr) minmax(0,28fr)}
+ html body .layout>.preview{grid-column:auto;position:sticky;top:66px;height:calc(100dvh - 66px);min-height:0;max-height:none;align-self:start;border-top:0;border-left:1px solid #e3e6ed;padding:18px 12px;overflow:auto}
+ html body .layout>.preview .device{max-width:100%;flex-shrink:0}
+ html body .layout>.main #notice.live-notice{right:clamp(14px,1.5vw,28px)}
+}
+@media(min-width:651px) and (max-width:899px){
+ html body .layout{grid-template-columns:minmax(0,70fr) minmax(0,30fr)}
+ html body .layout>.preview{padding-inline:8px}
+ html body .layout>.preview .preview-toolbar{justify-content:center}
+}
+@media(max-width:650px){
+ html body .layout{display:block}
+ .suite-workspace-products,.suite-bio-products{width:calc(100% - 28px)}
+}
