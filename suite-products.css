@@ -1,0 +1,15 @@
+/* The same direct tool switcher on public pages and inside each workspace. */
+.suite-product-nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;min-width:0;width:100%}
+.suite-product-nav a{display:flex;align-items:center;justify-content:center;box-sizing:border-box;min-height:46px;padding:11px 10px;border:1px solid #cfd8e8;border-radius:12px;background:linear-gradient(115deg,#dcecff,#eedff2);color:#354963;font:750 14px/1.3 Inter,system-ui,sans-serif;text-align:center;text-decoration:none;letter-spacing:normal;box-shadow:0 4px 14px #809dc50c}
+.suite-product-nav a[aria-current="page"]{border-color:#919bc8;box-shadow:inset 0 0 0 1px #a5add550}
+.suite-product-nav a:hover{border-color:#7b88bc;filter:brightness(1.02)}
+.suite-product-nav a:focus-visible{outline:3px solid #8b8bc8;outline-offset:3px}
+body.dark .suite-product-nav a,html[data-mode="dark"] .suite-product-nav a{background:linear-gradient(125deg,#293b4b,#43334d);color:#f5f4ff;border-color:#ffffff24}
+body.dark .suite-product-nav a[aria-current="page"],html[data-mode="dark"] .suite-product-nav a[aria-current="page"]{border-color:#afa1dc;box-shadow:inset 0 0 0 1px #afa1dc55}
+.suite-workspace-products{max-width:1500px;width:calc(100% - clamp(32px,6vw,88px));margin:12px auto 0}
+.suite-pixel-products{width:min(1880px,calc(100% - 40px));margin:16px auto 0}
+.suite-bio-products{width:min(1440px,calc(100% - 44px));margin:14px auto 0}
+.suite-landing-products{padding-bottom:18px;border-bottom:1px solid var(--line,#dfe3ed)}
+header .suite-product-nav{max-width:620px}
+body>header>.suite-product-nav{max-width:none}
+@media(max-width:700px){.suite-product-nav{gap:7px}.suite-product-nav a{min-height:44px;padding:10px 5px;font-size:12px}.suite-workspace-products,.suite-pixel-products,.suite-bio-products{width:calc(100% - 28px);margin-top:12px}}
