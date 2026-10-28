@@ -113,6 +113,10 @@
       "destination": "https://pansum21.github.io/biomi/profile.html"
     },
     {
+      "source": "/studio",
+      "destination": "/pages/studio.html"
+    },
+    {
       "source": "/account",
       "destination": "/pages/account.html"
     },

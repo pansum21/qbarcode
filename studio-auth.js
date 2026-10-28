@@ -5,7 +5,7 @@ import {collection,addDoc,getDocs,getDoc,doc,deleteDoc,query,limit,serverTimesta
 export function safeStudioNext(value,origin=location.origin){
  if(!value||typeof value!=='string'||!value.startsWith('/')||value.startsWith('//'))return '';
  try{const url=new URL(value,origin);if(url.origin!==origin||url.pathname==='/account')return '';
-  return ['/', '/projects'].includes(url.pathname)||['/biomi','/pixelmint','/qr','/barcode'].some(p=>url.pathname===p||url.pathname.startsWith(p+'/'))?url.pathname+url.search+url.hash:'';
+  return ['/', '/studio', '/projects'].includes(url.pathname)||['/biomi','/pixelmint','/qr','/barcode'].some(p=>url.pathname===p||url.pathname.startsWith(p+'/'))?url.pathname+url.search+url.hash:'';
  }catch{return ''}
 }
 const byId=id=>document.getElementById(id);
@@ -61,7 +61,7 @@ window.qbarAuth={render,getUser:()=>currentUser,ready:authReady,signOut:()=>sign
 document.addEventListener('click',e=>{const id=e.target.closest('button')?.id;if(id==='qbarTabLogin'||id==='qbarTabSignup'){switchTab(id==='qbarTabSignup'?'signup':'login');return}if(['firebaseGoogle','firebaseSignup','firebaseEmailLogin','firebaseResetPassword','firebaseLogout'].includes(id))action(id)});
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='accountPassword'){e.preventDefault();action(accountTab==='signup'?'firebaseSignup':'firebaseEmailLogin')}});
 authReady.then(()=>{
- ready=true;onAuthStateChanged(auth,u=>{currentUser=u;render();window.qbarRefreshProjects?.();status('')},e=>status(friendly(e)));render();
+ ready=true;onAuthStateChanged(auth,u=>{currentUser=u;if(location.pathname==='/studio'){if(!u){location.replace('/account?next=%2Fstudio');return}delete document.documentElement.dataset.workspaceAuth}if(u&&next&&location.pathname==='/account'){location.replace(next);return}render();window.qbarRefreshProjects?.();status('')},e=>status(friendly(e)));render();
  return getRedirectResult(auth);
 }).then(result=>{if(result)finishSignIn(result)}).catch(e=>{ready=true;render();status(friendly(e))});
 

@@ -204,6 +204,15 @@ for (const [route, [label, description]] of Object.entries(context.routes)) {
   if (route !== '/') rewrites.push({source: route, destination: '/' + filename});
   if (!privateRoutes.has(route)) publicRoutes.push(canonical);
 }
+// The public front page introduces the suite; the existing generator remains intact at /studio.
+fs.mkdirSync(path.join(out, 'pages'), {recursive:true});
+const workspace = fs.readFileSync(path.join(out, 'index.html'), 'utf8')
+ .replace(/<title>[^<]*<\/title>/, '<title>Your Workspace | QBar Studio</title>')
+ .replace(/(<meta name="robots" content=")[^"]*/, '$1noindex,follow')
+ .replace(/(<link rel="canonical" href=")[^"]*/, '$1https://qbarstudio.com/studio');
+fs.writeFileSync(path.join(out,'pages/studio.html'),workspace);
+rewrites.unshift({source:'/studio',destination:'/pages/studio.html'});
+fs.writeFileSync(path.join(out,'index.html'),fs.readFileSync(path.join(root,'landing.html'),'utf8'));
 for (const alias of ['/inventory/labels', '/inventory/stock']) rewrites.push({source: alias, destination: '/pages/barcode/bulk.html'});
 if (fs.existsSync(path.join(root, 'pages', 'app.html'))) {
   fs.mkdirSync(path.join(out, 'pages'), {recursive: true});
