@@ -13,3 +13,9 @@ body.dark .suite-product-nav a[aria-current="page"],html[data-mode="dark"] .suit
 header .suite-product-nav{max-width:620px}
 body>header>.suite-product-nav{max-width:none}
 @media(max-width:700px){.suite-product-nav{gap:7px}.suite-product-nav a{min-height:44px;padding:10px 5px;font-size:12px}.suite-workspace-products,.suite-pixel-products,.suite-bio-products{width:calc(100% - 28px);margin-top:12px}}
+
+/* Shared PixelMint typography across the three Studio interfaces. */
+:root{--suite-font:Inter,ui-sans-serif,system-ui,Arial,sans-serif}
+body :is(h1,h2,h3){font-family:var(--suite-font)}
+body :is(.header .brand,.studio-brand,.top>.brand){font-family:var(--suite-font)!important;font-weight:800;letter-spacing:-.7px;font-style:normal}
+body :is(.hero h1,.landing-hero h1,.bio-hero-copy h1){font-weight:800}
