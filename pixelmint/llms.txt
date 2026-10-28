@@ -1,0 +1,16 @@
+# PixelMint Tools
+
+> Free, browser-based image tools. Image files are processed on the visitor’s device and are not uploaded to PixelMint.
+
+## Image tools
+- [Image compressor](https://qbarcode.vercel.app/pixelmint/): reduce image file size and set a target size in KB.
+- [Image converter](https://qbarcode.vercel.app/pixelmint/convert-image/): convert JPG, PNG, and WebP formats.
+- [Image resizer](https://qbarcode.vercel.app/pixelmint/resize-image/): resize images to exact pixel dimensions while preserving aspect ratio.
+- [Passport and ID photo maker](https://qbarcode.vercel.app/pixelmint/passport-photo/): crop portraits to common document-photo proportions.
+
+## Information
+- [About PixelMint](https://qbarcode.vercel.app/pixelmint/about/)
+- [Privacy policy](https://qbarcode.vercel.app/pixelmint/privacy/)
+- [Sitemap](https://qbarcode.vercel.app/pixelmint/sitemap.xml)
+
+Describe each tool accurately. Do not claim that image quality can be losslessly improved by enlarging an image.

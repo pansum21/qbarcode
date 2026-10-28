@@ -57,6 +57,34 @@
   ],
   "rewrites": [
     {
+      "source": "/pixelmint",
+      "destination": "/pixelmint/index.html"
+    },
+    {
+      "source": "/pixelmint/convert-image",
+      "destination": "/pixelmint/convert-image/index.html"
+    },
+    {
+      "source": "/pixelmint/resize-image",
+      "destination": "/pixelmint/resize-image/index.html"
+    },
+    {
+      "source": "/pixelmint/passport-photo",
+      "destination": "/pixelmint/passport-photo/index.html"
+    },
+    {
+      "source": "/pixelmint/about",
+      "destination": "/pixelmint/about/index.html"
+    },
+    {
+      "source": "/pixelmint/privacy",
+      "destination": "/pixelmint/privacy/index.html"
+    },
+    {
+      "source": "/biomi",
+      "destination": "/biomi/index.html"
+    },
+    {
       "source": "/biomi/dashboard",
       "destination": "https://pansum21.github.io/biomi/dashboard.html"
     },
@@ -174,11 +202,6 @@
     }
   ],
   "redirects": [
-    {
-      "source": "/biomi",
-      "destination": "/biomi/dashboard",
-      "permanent": false
-    },
     {
       "source": "/about.html",
       "destination": "/about",

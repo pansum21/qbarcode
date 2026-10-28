@@ -21,10 +21,11 @@ fs.rmSync(out, {recursive: true, force: true});
 fs.mkdirSync(out, {recursive: true});
 // Retain verification, ads, robots, manifest, service worker and standalone docs.
 for (const name of fs.readdirSync(root)) {
-  if (/\.(html|txt|png|webp|ico|svg|json|webmanifest|js)$/.test(name) && name !== 'index.html') {
+  if (/\.(html|txt|png|webp|ico|svg|json|webmanifest|js|css)$/.test(name) && name !== 'index.html') {
     fs.copyFileSync(path.join(root, name), path.join(out, name));
   }
 }
+for (const dir of ['pixelmint','biomi']) if(fs.existsSync(path.join(root,dir)))fs.cpSync(path.join(root,dir),path.join(out,dir),{recursive:true});
 const logo = source.match(/<img src="data:image\/(webp|png);base64,([^"]+)"[^>]*class="brand-logo"/);
 if (!logo) throw Error('Existing brand logo not found');
 fs.writeFileSync(path.join(out, 'qbar-logo.' + logo[1]), Buffer.from(logo[2], 'base64'));
@@ -209,6 +210,7 @@ if (fs.existsSync(path.join(root, 'pages', 'app.html'))) {
   fs.copyFileSync(path.join(root, 'pages', 'app.html'), path.join(out, 'pages', 'app.html'));
   rewrites.push({source: '/app', destination: '/pages/app.html'});
 }
+publicRoutes.push('https://qbarcode.vercel.app/biomi',...["https://qbarcode.vercel.app/pixelmint", "https://qbarcode.vercel.app/pixelmint/convert-image", "https://qbarcode.vercel.app/pixelmint/resize-image", "https://qbarcode.vercel.app/pixelmint/passport-photo", "https://qbarcode.vercel.app/pixelmint/about", "https://qbarcode.vercel.app/pixelmint/privacy"]);
 fs.writeFileSync(path.join(out, 'sitemap.xml'), '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + publicRoutes.map(url => '  <url><loc>' + url + '</loc></url>').join('\n') + '\n</urlset>\n');
 const config = JSON.parse(fs.readFileSync(path.join(root, 'vercel.json'), 'utf8'));
 const biomiRewrites = [
@@ -241,5 +243,6 @@ const biomiRewrites = [
     "destination": "https://pansum21.github.io/biomi/profile.html"
   }
 ];
-if (JSON.stringify(config.rewrites) !== JSON.stringify([...biomiRewrites, ...rewrites])) throw Error('Vercel routes do not match the application routes');
+if (JSON.stringify(config.rewrites) !== JSON.stringify([...[{"source": "/pixelmint", "destination": "/pixelmint/index.html"}, {"source": "/pixelmint/convert-image", "destination": "/pixelmint/convert-image/index.html"}, {"source": "/pixelmint/resize-image", "destination": "/pixelmint/resize-image/index.html"}, {"source": "/pixelmint/passport-photo", "destination": "/pixelmint/passport-photo/index.html"}, {"source": "/pixelmint/about", "destination": "/pixelmint/about/index.html"}, {"source": "/pixelmint/privacy", "destination": "/pixelmint/privacy/index.html"}, {"source": "/biomi", "destination": "/biomi/index.html"}], ...biomiRewrites, ...rewrites])) throw Error('Vercel routes do not match the application routes');
 console.log('Built ' + Object.keys(context.routes).length + ' pages; sitemap contains ' + publicRoutes.length + ' public URLs.');
+

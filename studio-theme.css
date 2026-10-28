@@ -1,0 +1,18 @@
+/* BioMi light surfaces and PixelMint dark surfaces. Tool layouts stay intact. */
+html body:not(.dark){color-scheme:light;--bg:#f4f5f8;--panel:#ffffff;--text:#202738;--muted:#667085;--line:#dfe3ed;--soft:#eef2fb;--input:#ffffff;--accent:#5b63b7;--studio-button:linear-gradient(115deg,#c6e5ff,#e3e2fa 48%,#ffd2e7);--studio-button-text:#354963;--studio-border:#bacde4;--studio-shadow:0 4px 14px #809dc52a}
+html body.dark{color-scheme:dark;--bg:#0b0b18;--panel:#19192f;--text:#f5f4ff;--muted:#a7a5bc;--line:#ffffff24;--soft:#24243f;--input:#141426;--accent:#7cf6d2;--studio-button:linear-gradient(110deg,#7df1cf,#a9d7ff 53%,#bba0ff);--studio-button-text:#111222;--studio-border:#b59bff66;--studio-shadow:0 6px 20px #7cf6d21a}
+html body[data-morphism][data-glass]{background:radial-gradient(ellipse at 88% 9%,color-mix(in srgb,var(--glass-glow-a,#dcecff) 48%,transparent),transparent 42%),radial-gradient(ellipse at 8% 75%,color-mix(in srgb,var(--glass-glow-b,#f6dff0) 45%,transparent),transparent 46%),var(--bg)!important;background-attachment:fixed!important}
+html body.dark[data-morphism][data-glass]{background:radial-gradient(ellipse at 18% 2%,color-mix(in srgb,var(--glass-glow-b,#8559ff) 20%,transparent),transparent 36%),radial-gradient(ellipse at 90% 22%,color-mix(in srgb,var(--glass-glow-a,#27c5a8) 12%,transparent),transparent 35%),var(--bg)!important}
+html body[data-morphism] :is(.header,.sidebar,.workspace,.settings-card,.info,.home-tools,.camera-scanner,.scan-dialog){border-color:var(--line);color:var(--text)}
+html body:not(.dark)[data-morphism] :is(.header,.sidebar,.workspace,.settings-card,.info,.home-tools,.camera-scanner,.scan-dialog){background:color-mix(in srgb,var(--panel) 90%,transparent);box-shadow:0 8px 28px #3341550b,inset 0 1px 0 #ffffffd9}
+html body.dark[data-morphism] :is(.header,.sidebar,.workspace,.settings-card,.info,.home-tools,.camera-scanner,.scan-dialog){background:linear-gradient(135deg,#ffffff0a,#ffffff02),color-mix(in srgb,var(--panel) 90%,transparent);box-shadow:0 14px 42px #00000032,inset 0 1px 0 #ffffff0a}
+html body[data-morphism] :is(.btn,.tools-toggle,.home-tool-link){background:linear-gradient(180deg,#ffffff55,#ffffff05 50%,#ffffff22),var(--studio-button)!important;color:var(--studio-button-text)!important;border:1px solid var(--studio-border)!important;box-shadow:inset 0 1px 0 #ffffff99,var(--studio-shadow)!important;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+html body[data-morphism] :is(.btn,.tools-toggle,.home-tool-link):hover{filter:brightness(1.025)}
+html body[data-morphism] :is(input,select,textarea){color:var(--text);background-color:var(--input);border-color:var(--line)}
+html body[data-morphism] :is(.btn.delete,.btn.danger){background:#fff0f1!important;color:#b42338!important;border-color:#efb3ba!important}
+html body .studio-account-links{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}
+html body .studio-account-links a{font-size:12px;text-decoration:underline;text-underline-offset:3px}
+html body .studio-continue{display:inline-flex;margin:12px 0;padding:12px 16px;border-radius:10px;background:var(--studio-button);color:var(--studio-button-text);font-weight:750}
+@media(prefers-reduced-motion:reduce){html body *{transition:none!important}}
+
+html body .studio-continue[hidden]{display:none!important}
