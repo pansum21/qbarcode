@@ -1,0 +1,45 @@
+/* PixelMint light mode uses the same blue/pink glass palette as QBar Studio and BioMi.
+   Dark mode retains PixelMint's original navy/mint/lilac palette. */
+html[data-mode="light"]{color-scheme:light;--bg:#f4f5f8;--surface:#ffffffb8;--surface-strong:#ffffffe0;--line:#dfe3ed;--text:#202738;--muted:#667085;--subtle:#717a8f;--mint:#5269a3;--lilac:#7866b0;--pink:#af5a88;--shadow:0 16px 42px #526d9f12}
+html[data-mode="light"] body{background:radial-gradient(ellipse at 88% 9%,#dcecff7a,transparent 42%),radial-gradient(ellipse at 8% 75%,#f6dff073,transparent 46%),var(--bg);background-attachment:fixed}
+html[data-mode="light"] .ambient{opacity:.07}
+.topbar{height:auto;min-height:82px;gap:12px;flex-wrap:wrap;padding-top:16px;padding-bottom:16px}
+.topbar .topnav{gap:8px}
+.topbar [data-theme-toggle]{flex:none}
+html[data-mode="light"] :is(.topbar,.footer,.brand-tagline,.setting-block,.step-card,.faq-list,.faq-list details){border-color:var(--line)}
+html[data-mode="light"] :is(.brand-light,.brand-tagline,.topnav a,.footer nav a,.back-link,.hero-lede,.eyebrow,.trust-row,.image-meta small,.drop-sub,.file-hint,.file-details small,.settings-head small,.step-label,.range-labels,.optional,.select-wrap>span,.input-with-unit span,.field-help,.privacy-inline small,.result-panel p,.supported-note,.tools-section .section-heading>p,.tool-card p,.step-card>span,.step-card p,.privacy-card p,.privacy-stamp small,.faq-list details p,.dimension-input>label,.dimension-input>div span,.dimension-x,.lock-ratio,.legal-card p,.legal-updated,.passport-upload small,.crop-help,.continue-label,.art-format span,.art-caption,.footer){color:var(--muted)}
+html[data-mode="light"] :is(.topnav a:hover,.back-link:hover,.card-link,.card-link b,.inline-link,.inline-link span,.privacy-lock,.privacy-stamp b,.privacy-inline strong,.change-photo,.passport-result>strong,.legal-card a){color:var(--mint)}
+html[data-mode="light"] .gradient-text{background:linear-gradient(95deg,#4f7da6 4%,#7772b9 48%,#a26895 95%);-webkit-background-clip:text;background-clip:text;color:transparent}
+html[data-mode="light"] .glass-strong{background:linear-gradient(135deg,#ffffffcc,#f8f7ff99),var(--surface-strong)}
+html[data-mode="light"] :is(.top-cta,.button-primary,.button-secondary,.button-quiet,.browse-more,.preset-row button,.single-file-item .file-download){background:linear-gradient(115deg,#c6e5ff,#e3e2fa 48%,#ffd2e7);color:#354963;border:1px solid #bacde4;box-shadow:0 4px 14px #809dc51a}
+html[data-mode="light"] .top-cta span{color:#6075a5}
+html[data-mode="light"] :is(.topnav a:hover,.mode-tab.active){background:#e6eafb;color:#4e5e94}
+html[data-mode="light"] .mode-tabs{background:#e8ecf58a;border-color:#d7deed}
+html[data-mode="light"] .mode-tab{color:#667085}
+html[data-mode="light"] .mode-tab:hover{color:#354963}
+html[data-mode="light"] .mode-tab.active{box-shadow:inset 0 0 0 1px #b6c3e4}
+html[data-mode="light"] :is(.settings-panel,.passport-settings){background:#eef2fb7a;border-color:#dfe3ed}
+html[data-mode="light"] :is(.dropzone,.passport-upload){border-color:#bcc8df;background:radial-gradient(ellipse at 50% 40%,#dcecff60,transparent 65%),#ffffff70}
+html[data-mode="light"] :is(.dropzone:hover,.dropzone.dragover){background:#e8effc;border-color:#7f95c7}
+html[data-mode="light"] :is(.upload-icon,.tool-hero-art,.tool-hero-art:before,.tool-hero-art:after,.orbit){border-color:#cbd4e76b}
+html[data-mode="light"] .upload-icon svg{stroke:#6c7ca6}
+html[data-mode="light"] :is(.file-item,.file-preview-frame,.single-file-item .file-preview-frame){background:#f6f7fc;border-color:#dfe3ed}
+html[data-mode="light"] :is(.select-wrap select,.input-with-unit,.dimension-input>div,.continue-select){background:#ffffffc9;border-color:#cfd8e8;color:#27344a}
+html[data-mode="light"] :is(.input-with-unit input,.dimension-input input){color:#27344a}
+html[data-mode="light"] :is(.select-wrap option,.continue-select option){background:#fff;color:#27344a}
+html[data-mode="light"] .file-remove{color:#a34261}
+html[data-mode="light"] .file-remove:hover{background:#f9e3eb;color:#922f4f}
+html[data-mode="light"] :is(.privacy-inline,.result-panel,.passport-result,.privacy-stamp,.local-badge){background:#e9f0fc80;border-color:#cbd7eb}
+html[data-mode="light"] :is(.file-glyph,.icon-resize){background:#f3dfed;color:#986388}
+html[data-mode="light"] .status-message,html[data-mode="light"] .resolution-note[data-soft="true"]{color:#a34261}
+html[data-mode="light"] :is(.float-chip,.art-format,.resize-dimension){background:#ffffffe0;border-color:#e2e6f3;color:#626d91;box-shadow:0 12px 32px #43548a1a}
+html[data-mode="light"] :is(.art-format strong,.art-target strong,.passport-label strong){color:#6a6da7}
+html[data-mode="light"] .art-source strong{color:#a96792}
+html[data-mode="light"] .art-target{background:linear-gradient(135deg,#e2eefb,#ece6fb)}
+html[data-mode="light"] .card-arrow{color:#828ca5}
+html[data-mode="light"] .file-select-label{border-color:#c7cde5;color:#596787}
+html[data-mode="light"] .tool-card:hover{background:#fff;border-color:#bbc9e3}
+html[data-mode="light"] .legal-updated{color:#717a8f!important}
+@media(max-width:1200px){.brand-tagline{display:none}}
+@media(max-width:1000px){.topbar .topnav{display:none}}
+@media(max-width:700px){.topbar{gap:9px}.topbar .brand{margin-right:auto}.topbar .top-cta:not([data-studio-account]){display:none}.topbar .top-cta{font-size:12px;padding:10px}.topbar [data-theme-toggle]{padding:10px;font-size:12px}.topbar .brand{font-size:18px}}

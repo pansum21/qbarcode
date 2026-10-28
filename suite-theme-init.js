@@ -1,0 +1,2 @@
+/* Read only the shared appearance preference before the page paints. */
+(function(){let mode='light';try{const saved=JSON.parse(localStorage.getItem('qbar-appearance-v1')||'{}');const value=saved.mode||localStorage.getItem('qbar-theme');if(value==='light'||value==='dark')mode=value}catch{}document.documentElement.dataset.mode=mode;document.documentElement.style.colorScheme=mode;})();

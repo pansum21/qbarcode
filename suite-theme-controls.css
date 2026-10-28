@@ -1,0 +1,6 @@
+/* A common light/dark control. Tool content and export canvases keep their own colors. */
+[data-theme-toggle]{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:10px 14px;border:1px solid #bacde4;border-radius:11px;background:linear-gradient(115deg,#c6e5ff,#e3e2fa 48%,#ffd2e7);color:#354963;font:700 13px/1.2 Inter,system-ui,sans-serif;white-space:nowrap;cursor:pointer;box-shadow:0 4px 14px #809dc51a}
+[data-theme-toggle]:hover{filter:brightness(1.025)}[data-theme-toggle]:focus-visible{outline:3px solid #7a80c5;outline-offset:3px}
+html[data-mode="dark"] [data-theme-toggle]{background:linear-gradient(110deg,#7df1cf,#a9d7ff 53%,#bba0ff);color:#111222;border-color:#b59bff66;box-shadow:0 6px 20px #7cf6d21a}
+.suite-header-actions{display:flex;align-items:center;justify-content:flex-end;gap:12px}
+@media(max-width:520px){.suite-header-actions{gap:10px}.suite-header-actions [data-theme-toggle]{min-height:42px}}
