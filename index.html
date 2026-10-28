@@ -778,7 +778,7 @@ function permanentCodeSvg(source){
  const parsed=new DOMParser().parseFromString(source,'image/svg+xml'),inner=parsed.documentElement;
  if(inner.localName!=='svg'||parsed.querySelector('parsererror'))throw Error('The code image could not be prepared.');
  if(inner.getAttribute('data-qbar-brand')==='permanent')return new XMLSerializer().serializeToString(inner);
- const idPrefix='qbar-'+Math.random().toString(36).slice(2,10)+'-';for(const node of inner.querySelectorAll('[id]')){const oldId=node.id,newId=idPrefix+oldId;node.id=newId;for(const element of [inner,...inner.querySelectorAll('*')])for(const attribute of [...element.attributes]){let value=attribute.value.split('url(#'+oldId+')').join('url(#'+newId+')');if(value==='#'+oldId)value='#'+newId;if(value!==attribute.value)element.setAttribute(attribute.name,value)}}
+ const idPrefix='qbar-'+Math.random().toString(36).slice(2,10)+'-';for(const node of inner.querySelectorAll('[id]')){const oldId=node.id,newId=idPrefix+oldId;node.id=newId;for(const element of [inner,...inner.querySelectorAll('*')])for(const attribute of [...element.attributes]){let value=attribute.value.split('url(#'+oldId+')').join('url(#'+newId+')').split("url('#"+oldId+"')").join("url('#"+newId+"')").split('url("#'+oldId+'")').join('url("#'+newId+'")');if(value==='#'+oldId)value='#'+newId;if(value!==attribute.value)element.setAttribute(attribute.name,value)}}
  const ns='http://www.w3.org/2000/svg',vb=(inner.getAttribute('viewBox')||'').split(/[ ,]+/).map(Number);
  const width=parseFloat(inner.getAttribute('width'))||vb[2]||350,height=parseFloat(inner.getAttribute('height'))||vb[3]||350;
  const size=Math.max(6,Math.min(11,width*.027)),gap=96*.5/25.4,footHeight=gap+size*1.4,totalHeight=height+footHeight;
