@@ -59,7 +59,7 @@ template = template.replace('</body>', '<script defer src="' + scriptURL + '"></
 const publicRoutes = [];
 const rewrites = [];
 for (const [route, [label, description]] of Object.entries(context.routes)) {
-  const title = (route === '/' ? 'Free QR Code & Barcode Generator Online' : label) + ' | QBar Code Studio';
+  const title = (route === '/' ? 'Free QR Code & Barcode Generator Online' : label) + ' | QBar Studio';
   const canonical = 'https://qbarstudio.com' + route;
   const robots = privateRoutes.has(route) ? 'noindex,follow' : 'index,follow';
   let html = template.replace(/<title>[^<]*<\/title>/, '<title>' + escapeHTML(title) + '</title>')
@@ -85,13 +85,13 @@ for (const [route, [label, description]] of Object.entries(context.routes)) {
           <span style="background:rgba(40,90,67,0.12);color:var(--accent,#285a43);padding:6px 14px;border-radius:20px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;">🖨️ Bulk Label Sheets Ready</span>
         </div>
       </section>`
-    : '<div class="intro"><div class="eyebrow">QBar Code Studio</div><h1>' + escapeHTML(label) + '</h1><p>' + escapeHTML(description) + '</p></div>';
+    : '<div class="intro"><div class="eyebrow">QBar Studio</div><h1>' + escapeHTML(label) + '</h1><p>' + escapeHTML(description) + '</p></div>';
   const seoGuide = route === '/' ? `
 <section class="info" style="margin-top:36px;border-radius:14px;line-height:1.75;">
   <div style="background:linear-gradient(135deg,rgba(40,90,67,0.08),rgba(40,90,67,0.02));border:1px solid var(--line);border-radius:12px;padding:22px;margin-bottom:28px;">
     <span style="display:inline-block;background:#285a43;color:#fff;font-size:11px;font-weight:800;letter-spacing:1.2px;padding:4px 10px;border-radius:4px;text-transform:uppercase;margin-bottom:8px;">★ 100% Free Forever Guarantee</span>
     <h2 style="font-size:22px;margin:6px 0 10px;color:var(--text);">All-in-One Free Online QR Code &amp; Barcode Studio — No Expiry &amp; Zero Scan Limits</h2>
-    <p style="margin:0;font-size:14px;color:var(--muted);">QBar Code Studio is an advanced browser-based barcode generator, QR code designer, and real-time camera scanner built for retail businesses, logistics managers, developers, and creators. Generate high-resolution vector barcodes and custom branded QR codes directly inside your web browser with zero sign-up required, no paywalls, no watermark restrictions, and permanent lifetime functionality.</p>
+    <p style="margin:0;font-size:14px;color:var(--muted);">QBar Studio is an advanced browser-based barcode generator, QR code designer, and real-time camera scanner built for retail businesses, logistics managers, developers, and creators. Generate high-resolution vector barcodes and custom branded QR codes directly inside your web browser with zero sign-up required, no paywalls, no watermark restrictions, and permanent lifetime functionality.</p>
   </div>
   
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-bottom:32px;">
@@ -123,7 +123,7 @@ for (const [route, [label, description]] of Object.entries(context.routes)) {
 
   <h2 style="font-size:20px;margin-top:32px;margin-bottom:12px;color:var(--text);">Static vs. Dynamic QR Codes: Why QBar Codes Never Expire</h2>
   <p style="font-size:14px;color:var(--muted);">Many commercial QR code generators on the internet employ a predatory business model known as the <em>14-day trial trap</em>. When you create a dynamic QR code on those platforms, they encode their own middleman redirect URL rather than your actual website or contact info. Once you have printed thousands of brochures, business cards, restaurant menus, or retail packaging boxes, they disable the redirect link and demand $15 to $35 per month to keep your printed codes alive.</p>
-  <p style="font-size:14px;color:var(--muted);"><strong>QBar Code Studio takes the opposite approach:</strong> every QR code generated here is a 100% static, independent barcode. Your destination URL, text, Wi-Fi credentials, or vCard data are encoded directly into the pixel matrix itself. There is no middleman redirect server, no database dependency, and no tracking intermediary. Because the data lives inside the physical code pattern, your QR codes will scan and work permanently, today, tomorrow, and 20 years from now with zero fees.</p>
+  <p style="font-size:14px;color:var(--muted);"><strong>QBar Studio takes the opposite approach:</strong> every QR code generated here is a 100% static, independent barcode. Your destination URL, text, Wi-Fi credentials, or vCard data are encoded directly into the pixel matrix itself. There is no middleman redirect server, no database dependency, and no tracking intermediary. Because the data lives inside the physical code pattern, your QR codes will scan and work permanently, today, tomorrow, and 20 years from now with zero fees.</p>
 
   <h2 style="font-size:20px;margin-top:32px;margin-bottom:12px;color:var(--text);">Complete Guide to Supported Barcode Symbologies &amp; Standards</h2>
   <p style="font-size:14px;color:var(--muted);">Choosing the appropriate barcode symbology is essential for retail compliance, logistics tracking, and point-of-sale scanner compatibility:</p>
@@ -155,16 +155,16 @@ for (const [route, [label, description]] of Object.entries(context.routes)) {
 
   <h2 style="font-size:20px;margin-top:36px;margin-bottom:14px;color:var(--text);">Frequently Asked Questions (FAQ)</h2>
   <details style="margin-bottom:12px;border-bottom:1px solid var(--line);padding-bottom:12px;">
-    <summary style="font-weight:700;cursor:pointer;color:var(--text);">Is QBar Code Studio completely free for personal and commercial use?</summary>
-    <p style="font-size:13px;margin-top:8px;color:var(--muted);">Yes, QBar Code Studio is 100% free with unlimited generation and high-resolution exports for both personal and commercial projects. There are no subscriptions, no credit card requirements, and no paywalls.</p>
+    <summary style="font-weight:700;cursor:pointer;color:var(--text);">Is QBar Studio completely free for personal and commercial use?</summary>
+    <p style="font-size:13px;margin-top:8px;color:var(--muted);">Yes, QBar Studio is 100% free with unlimited generation and high-resolution exports for both personal and commercial projects. There are no subscriptions, no credit card requirements, and no paywalls.</p>
   </details>
   <details style="margin-bottom:12px;border-bottom:1px solid var(--line);padding-bottom:12px;">
     <summary style="font-weight:700;cursor:pointer;color:var(--text);">Do generated QR codes ever expire, or are there scan limits?</summary>
-    <p style="font-size:13px;margin-top:8px;color:var(--muted);">No. Unlike subscription-based QR services that disable your codes after a 14-day trial, QBar Code Studio generates permanent static QR codes that encode data directly into the matrix. They never expire and have zero scan limits.</p>
+    <p style="font-size:13px;margin-top:8px;color:var(--muted);">No. Unlike subscription-based QR services that disable your codes after a 14-day trial, QBar Studio generates permanent static QR codes that encode data directly into the matrix. They never expire and have zero scan limits.</p>
   </details>
   <details style="margin-bottom:12px;border-bottom:1px solid var(--line);padding-bottom:12px;">
-    <summary style="font-weight:700;cursor:pointer;color:var(--text);">How does QBar Code Studio protect my privacy?</summary>
-    <p style="font-size:13px;margin-top:8px;color:var(--muted);">QBar Code Studio operates entirely client-side inside your browser. Your URLs, contact details, Wi-Fi passwords, and barcodes are never transmitted to, logged on, or tracked by any external server.</p>
+    <summary style="font-weight:700;cursor:pointer;color:var(--text);">How does QBar Studio protect my privacy?</summary>
+    <p style="font-size:13px;margin-top:8px;color:var(--muted);">QBar Studio operates entirely client-side inside your browser. Your URLs, contact details, Wi-Fi passwords, and barcodes are never transmitted to, logged on, or tracked by any external server.</p>
   </details>
   <details style="margin-bottom:12px;border-bottom:1px solid var(--line);padding-bottom:12px;">
     <summary style="font-weight:700;cursor:pointer;color:var(--text);">Which barcode and QR formats are supported?</summary>
@@ -187,8 +187,8 @@ for (const [route, [label, description]] of Object.entries(context.routes)) {
     <p style="font-size:13px;margin-top:8px;color:var(--muted);">Yes. Our Bulk Barcode &amp; Labels tool allows you to create multi-row product label sheets with custom column layouts, margins, item descriptions, and prices ready for standard A4 and sticker printing.</p>
   </details>
   <details style="margin-bottom:12px;border-bottom:1px solid var(--line);padding-bottom:12px;">
-    <summary style="font-weight:700;cursor:pointer;color:var(--text);">Does QBar Code Studio work offline without an internet connection?</summary>
-    <p style="font-size:13px;margin-top:8px;color:var(--muted);">Yes. QBar Code Studio is a Progressive Web App (PWA) with full service worker caching. You can install it on your Android, iOS, or desktop device and generate or scan codes anywhere without an internet connection.</p>
+    <summary style="font-weight:700;cursor:pointer;color:var(--text);">Does QBar Studio work offline without an internet connection?</summary>
+    <p style="font-size:13px;margin-top:8px;color:var(--muted);">Yes. QBar Studio is a Progressive Web App (PWA) with full service worker caching. You can install it on your Android, iOS, or desktop device and generate or scan codes anywhere without an internet connection.</p>
   </details>
   <details style="margin-bottom:12px;border-bottom:1px solid var(--line);padding-bottom:12px;">
     <summary style="font-weight:700;cursor:pointer;color:var(--text);">Can I scan paper invoices or stock sheets to generate barcodes automatically?</summary>
