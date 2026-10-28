@@ -203,6 +203,28 @@
   ],
   "redirects": [
     {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "qbarcode.vercel.app"
+        }
+      ],
+      "destination": "https://qbarstudio.com/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.qbarstudio.com"
+        }
+      ],
+      "destination": "https://qbarstudio.com/:path*",
+      "permanent": true
+    },
+    {
       "source": "/about.html",
       "destination": "/about",
       "permanent": true

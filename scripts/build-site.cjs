@@ -60,7 +60,7 @@ const publicRoutes = [];
 const rewrites = [];
 for (const [route, [label, description]] of Object.entries(context.routes)) {
   const title = (route === '/' ? 'Free QR Code & Barcode Generator Online' : label) + ' | QBar Code Studio';
-  const canonical = 'https://qbarcode.vercel.app' + route;
+  const canonical = 'https://qbarstudio.com' + route;
   const robots = privateRoutes.has(route) ? 'noindex,follow' : 'index,follow';
   let html = template.replace(/<title>[^<]*<\/title>/, '<title>' + escapeHTML(title) + '</title>')
     .replace(/(<meta name="description" content=")[^"]*/, '$1' + escapeHTML(description))
@@ -71,7 +71,7 @@ for (const [route, [label, description]] of Object.entries(context.routes)) {
     .replace(/(<meta property="og:url" content=")[^"]*/, '$1' + canonical)
     .replace(/(<meta name="twitter:title" content=")[^"]*/, '$1' + escapeHTML(title))
     .replace(/(<meta name="twitter:description" content=")[^"]*/, '$1' + escapeHTML(description))
-    .split('https://qbarcode.vercel.app/qbar-logo.png').join('https://qbarcode.vercel.app/qbar-logo.' + logo[1]);
+    .split('https://qbarstudio.com/qbar-logo.png').join('https://qbarstudio.com/qbar-logo.' + logo[1]);
   const intro = route === '/'
     ? `<section class="hero">
         <div class="eyebrow">✧ 100% FREE ONLINE QR CODE &amp; BARCODE STUDIO</div>
@@ -210,7 +210,7 @@ if (fs.existsSync(path.join(root, 'pages', 'app.html'))) {
   fs.copyFileSync(path.join(root, 'pages', 'app.html'), path.join(out, 'pages', 'app.html'));
   rewrites.push({source: '/app', destination: '/pages/app.html'});
 }
-publicRoutes.push('https://qbarcode.vercel.app/biomi',...["https://qbarcode.vercel.app/pixelmint", "https://qbarcode.vercel.app/pixelmint/convert-image", "https://qbarcode.vercel.app/pixelmint/resize-image", "https://qbarcode.vercel.app/pixelmint/passport-photo", "https://qbarcode.vercel.app/pixelmint/about", "https://qbarcode.vercel.app/pixelmint/privacy"]);
+publicRoutes.push('https://qbarstudio.com/biomi',...["https://qbarstudio.com/pixelmint", "https://qbarstudio.com/pixelmint/convert-image", "https://qbarstudio.com/pixelmint/resize-image", "https://qbarstudio.com/pixelmint/passport-photo", "https://qbarstudio.com/pixelmint/about", "https://qbarstudio.com/pixelmint/privacy"]);
 fs.writeFileSync(path.join(out, 'sitemap.xml'), '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + publicRoutes.map(url => '  <url><loc>' + url + '</loc></url>').join('\n') + '\n</urlset>\n');
 const config = JSON.parse(fs.readFileSync(path.join(root, 'vercel.json'), 'utf8'));
 const biomiRewrites = [

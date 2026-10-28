@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://qbarcode.vercel.app/pixelmint/</loc></url>
-  <url><loc>https://qbarcode.vercel.app/pixelmint/convert-image/</loc></url>
-  <url><loc>https://qbarcode.vercel.app/pixelmint/resize-image/</loc></url>
-  <url><loc>https://qbarcode.vercel.app/pixelmint/passport-photo/</loc></url>
-  <url><loc>https://qbarcode.vercel.app/pixelmint/about/</loc></url>
-  <url><loc>https://qbarcode.vercel.app/pixelmint/privacy/</loc></url>
+  <url><loc>https://qbarstudio.com/pixelmint/</loc></url>
+  <url><loc>https://qbarstudio.com/pixelmint/convert-image/</loc></url>
+  <url><loc>https://qbarstudio.com/pixelmint/resize-image/</loc></url>
+  <url><loc>https://qbarstudio.com/pixelmint/passport-photo/</loc></url>
+  <url><loc>https://qbarstudio.com/pixelmint/about/</loc></url>
+  <url><loc>https://qbarstudio.com/pixelmint/privacy/</loc></url>
 </urlset>
