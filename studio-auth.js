@@ -5,7 +5,7 @@ import {collection,addDoc,getDocs,getDoc,doc,deleteDoc,query,limit,serverTimesta
 export function safeStudioNext(value,origin=location.origin){
  if(!value||typeof value!=='string'||!value.startsWith('/')||value.startsWith('//'))return '';
  try{const url=new URL(value,origin);if(url.origin!==origin||url.pathname==='/account')return '';
-  return ['/', '/studio', '/projects'].includes(url.pathname)||['/biomi','/pixelmint','/qr','/barcode'].some(p=>url.pathname===p||url.pathname.startsWith(p+'/'))?url.pathname+url.search+url.hash:'';
+  return ['/', '/studio', '/projects', '/settings'].includes(url.pathname)||['/biomi','/pixelmint','/qr','/barcode'].some(p=>url.pathname===p||url.pathname.startsWith(p+'/'))?url.pathname+url.search+url.hash:'';
  }catch{return ''}
 }
 const byId=id=>document.getElementById(id);

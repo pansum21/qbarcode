@@ -60,3 +60,15 @@ body.suite-biomi-editor .preview-devices{background:var(--panel);border-color:va
 body.suite-biomi-editor .preview-devices button{color:var(--muted)}
 body.suite-biomi-editor .preview-devices button.selected{background:var(--soft);color:var(--text)}
 body.suite-biomi-editor.dark #editor .card{box-shadow:0 10px 25px #0000001f}
+
+/* Appearance editing lives in Settings, after sign-in, on every screen size. */
+body #quickMorphism,body #themeBtn,body #landingTheme,body [data-theme-toggle]{display:none!important}
+body:not([data-suite-signed-in="true"]) :is([data-suite-settings],.header a[data-route="/settings"],.header a[href^="/settings"]){display:none!important}
+body[data-page="/settings"]:not([data-suite-signed-in="true"]) #main{visibility:hidden;pointer-events:none}
+@media(max-width:650px){
+ body .header{height:auto;min-height:68px;gap:10px;padding:12px 14px;flex-wrap:wrap}
+ body .header .brand,body .studio-brand{display:flex!important;align-items:center;gap:7px;font-size:18px!important;line-height:1.25;white-space:nowrap;flex-shrink:0;visibility:visible!important;opacity:1!important}
+ body .header .brand-logo{width:34px;height:34px;flex-shrink:0}
+ body .header :is(.header-actions,.actions){margin-left:auto;gap:7px;flex-wrap:wrap}
+ body .suite-product-nav a{min-height:44px}
+}

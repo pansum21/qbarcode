@@ -25,3 +25,13 @@ if(location.pathname.startsWith('/biomi/dashboard')){
  const area=document.querySelector('.top-actions');if(area&&!area.querySelector('[data-suite-settings]')){const link=document.createElement('a');link.className='btn suite-settings-link';link.dataset.suiteSettings='true';link.href='/settings?return=%2Fbiomi%2Fdashboard';link.textContent='⚙ Settings';area.prepend(link)}
 }
 const systemMedia=matchMedia('(prefers-color-scheme: dark)');systemMedia.addEventListener?.('change',()=>{if(read().mode==='system')apply()});
+
+/* Account-only appearance controls; the public header stays uncluttered. */
+function syncSignedInControls(signedIn){
+ document.body.dataset.suiteSignedIn=String(!!signedIn);
+ document.querySelectorAll('[data-suite-settings],.header a[data-route="/settings"],.header a[href^="/settings"]').forEach(link=>{link.hidden=!signedIn});
+ if(location.pathname==='/settings'&&!signedIn)location.replace('/account?next='+encodeURIComponent(location.pathname+location.search));
+}
+Promise.all([import('/studio-firebase.js'),import('https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js')])
+ .then(async([client,sdk])=>{await client.authReady;sdk.onAuthStateChanged(client.auth,user=>syncSignedInControls(!!user),()=>syncSignedInControls(false))})
+ .catch(()=>syncSignedInControls(false));
