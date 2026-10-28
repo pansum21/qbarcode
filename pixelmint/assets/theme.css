@@ -1,3 +1,4 @@
+html{overflow-x:clip}
 /* PixelMint light mode uses the same blue/pink glass palette as QBar Studio and BioMi.
    Dark mode retains PixelMint's original navy/mint/lilac palette. */
 html[data-mode="light"]{color-scheme:light;--bg:#f4f5f8;--surface:#ffffffb8;--surface-strong:#ffffffe0;--line:#dfe3ed;--text:#202738;--muted:#667085;--subtle:#717a8f;--mint:#5269a3;--lilac:#7866b0;--pink:#af5a88;--shadow:0 16px 42px #526d9f12}
