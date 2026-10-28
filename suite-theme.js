@@ -1,5 +1,5 @@
 /* Shared theme controls for BioMi and PixelMint. No profile or image data is read. */
-function savedMode(){try{const saved=JSON.parse(localStorage.getItem('qbar-appearance-v1')||'{}');const value=saved.mode||localStorage.getItem('qbar-theme');return value==='dark'?'dark':'light'}catch{return 'light'}}
+function savedMode(){try{const saved=JSON.parse(localStorage.getItem('qbar-appearance-v1')||'{}');const value=saved.mode||localStorage.getItem('qbar-theme');return value==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):value==='dark'?'dark':'light'}catch{return 'light'}}
 function applyMode(mode,persist=false){
  mode=mode==='dark'?'dark':'light';
  document.documentElement.dataset.mode=mode;document.documentElement.style.colorScheme=mode;
