@@ -22,7 +22,7 @@ function render(){
  const label=byId('qbarAccountEmail');if(label)label.textContent=currentUser?.email||currentUser?.displayName||'Account';
  const pass=byId('accountPassword');if(pass)pass.autocomplete=accountTab==='signup'?'new-password':'current-password';
  const continuation=byId('studioContinue');if(continuation){continuation.hidden=!loggedIn||!next;if(next){continuation.href=next;continuation.textContent=next.startsWith('/biomi/')?'Continue to BioMi':'Continue to your tool'}}
- document.querySelectorAll('[data-studio-account]').forEach(a=>{a.textContent=loggedIn?'My account':'Sign in';a.href=loggedIn?'/account':'/account?next='+encodeURIComponent(location.pathname+location.search)});
+ document.querySelectorAll('[data-studio-account]').forEach(a=>{a.textContent=loggedIn?'My account':location.pathname.startsWith('/pixelmint')?'Login / Sign Up':'Sign in';a.href=loggedIn?'/account':'/account?next='+encodeURIComponent(location.pathname+location.search)});
  document.querySelectorAll('.header a[data-route="/account"]').forEach(a=>{a.textContent=loggedIn?'👤 My Account':'👤 Login / Sign Up';a.setAttribute('aria-label',loggedIn?'My account':'Login or create account')});
  document.dispatchEvent(new CustomEvent('studio:auth',{detail:{signedIn:loggedIn}}));
 }

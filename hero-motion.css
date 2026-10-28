@@ -1,0 +1,43 @@
+/* Decorative landing illustrations only; editors and user content are untouched. */
+.hero-free-note{margin:14px 0 0;color:var(--muted);font-size:14px;font-weight:650;letter-spacing:.02em}
+.hero-free-note span{color:var(--mint,#5b63b7);margin-right:6px}
+.motion-toggle{display:inline-flex;align-items:center;gap:6px;margin:12px 0 0;padding:5px 0;border:0;background:transparent!important;box-shadow:none!important;color:var(--muted,#68718a);font:600 12px/1.4 Inter,system-ui,sans-serif;cursor:pointer;text-decoration:underline;text-underline-offset:4px}
+.motion-toggle:focus-visible{outline:2px solid #8b8bc8;outline-offset:5px}
+.motion-format{display:inline-grid;min-width:3.5em;vertical-align:middle}
+.motion-format>span{grid-area:1/1;animation:suite-format-in 10s infinite}
+.motion-format>span+span{animation-name:suite-format-out}
+.image-card{animation:suite-photo-float 10s ease-in-out infinite}
+.image-card .image-sky{animation:suite-photo-tone 10s ease-in-out infinite;overflow:hidden}
+.image-card .sun{animation:suite-sun-shift 10s ease-in-out infinite}
+.hero-art .chip-webp{animation:suite-result-pop 10s ease-in-out infinite}
+.hero-art .chip-png{animation:suite-chip-float 7s ease-in-out infinite}
+.bio-art .bio-demo{animation:suite-bio-float 9s ease-in-out infinite}
+.bio-art .bio-avatar{animation:suite-avatar-ring 9s ease-in-out infinite}
+.bio-art .bio-demo-link{animation:suite-link-select 9s ease-in-out infinite;animation-delay:calc(var(--link-index,0)*1.7s)}
+.bio-art .bio-swatches{animation:suite-chip-float 7s ease-in-out infinite}
+.art-code-card{position:relative;overflow:hidden;animation:suite-qr-float 9s ease-in-out infinite}
+.motion-scan{pointer-events:none;position:absolute;left:12%;right:12%;top:23%;height:3px;border-radius:4px;background:#57ddba;box-shadow:0 0 16px #57ddba;animation:suite-code-scan 9s ease-in-out infinite}
+.code-motion-result{position:absolute;left:8%;right:8%;bottom:13%;padding:9px 5px;border:1px solid #a4d9d0;border-radius:10px;background:#edfefa;color:#254c51;box-shadow:0 5px 18px #30485322;font:700 9px/1.5 Inter,system-ui,sans-serif;text-align:center;animation:suite-code-open 9s ease-in-out infinite}
+.code-motion-result b{display:block;font-size:8px;color:#347d6d}
+.art-barcode{overflow:hidden;animation:suite-chip-float 9s ease-in-out infinite}
+.art-barcode:after{content:"";pointer-events:none;position:absolute;left:12%;top:16%;height:50%;width:2px;background:#57ddba;box-shadow:0 0 12px #57ddba;animation:suite-bar-scan 9s ease-in-out infinite}
+@keyframes suite-format-in{0%,38%,94%,100%{opacity:1;transform:translateY(0)}45%,86%{opacity:0;transform:translateY(-5px)}}
+@keyframes suite-format-out{0%,38%,94%,100%{opacity:0;transform:translateY(5px)}45%,86%{opacity:1;transform:translateY(0)}}
+@keyframes suite-photo-float{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-9px) rotate(-3deg)}}
+@keyframes suite-photo-tone{0%,35%,100%{filter:hue-rotate(0deg);transform:scale(1)}55%,80%{filter:hue-rotate(28deg);transform:scale(1.025)}}
+@keyframes suite-sun-shift{0%,100%{transform:translate(0,0)}55%{transform:translate(-14px,6px)}}
+@keyframes suite-result-pop{0%,30%,100%{transform:translateY(0);opacity:.65}48%,80%{transform:translateY(-9px);opacity:1}}
+@keyframes suite-chip-float{0%,100%{translate:0 0}50%{translate:0 -7px}}
+@keyframes suite-bio-float{0%,100%{transform:translateY(0) rotate(6deg)}50%{transform:translateY(-8px) rotate(3deg)}}
+@keyframes suite-avatar-ring{0%,100%{box-shadow:0 0 0 0 #a5c9ef22}45%{box-shadow:0 0 0 7px #a5c9ef44}}
+@keyframes suite-link-select{0%,8%,40%,100%{translate:0 0;box-shadow:0 4px 12px #65739708}18%,29%{translate:5px 0;box-shadow:0 0 0 2px #a7bdec88,0 7px 16px #65739722}}
+@keyframes suite-qr-float{0%,100%{transform:translateY(0) rotate(-7deg)}50%{transform:translateY(-7px) rotate(-4deg)}}
+@keyframes suite-code-scan{0%,12%{opacity:0;transform:translateY(0)}20%{opacity:1;transform:translateY(0)}49%{opacity:1;transform:translateY(110px)}56%,100%{opacity:0;transform:translateY(110px)}}
+@keyframes suite-code-open{0%,49%,94%,100%{opacity:0;transform:translateY(9px) scale(.95)}60%,84%{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes suite-bar-scan{0%,20%,78%,100%{opacity:0;transform:translateX(0)}30%{opacity:1;transform:translateX(0)}65%{opacity:1;transform:translateX(110px)}}
+body[data-hero-motion-paused="true"] :is(.hero-art,.bio-art,.code-art) *,
+body[data-hero-motion-paused="true"] :is(.hero-art,.bio-art,.code-art) *:after{animation-play-state:paused!important}
+@media(prefers-reduced-motion:reduce){
+ :is(.hero-art,.bio-art,.code-art) *,:is(.hero-art,.bio-art,.code-art) *:after{animation:none!important}
+ .motion-format>span+span,.motion-scan,.code-motion-result,.art-barcode:after{display:none}
+}
