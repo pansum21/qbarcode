@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://qbarcode.vercel.app/sitemap.xml
+Sitemap: https://qbarstudio.com/sitemap.xml

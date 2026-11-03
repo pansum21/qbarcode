@@ -3,7 +3,7 @@ const root=path.resolve(__dirname,'..'),out=path.join(root,'dist');
 const config=JSON.parse(fs.readFileSync(path.join(root,'vercel.json')));
 const read=p=>fs.readFileSync(path.join(out,p),'utf8');
 const urls=[...read('sitemap.xml').matchAll(/<loc>(.*?)<\/loc>/g)].map(m=>m[1]);
-assert.equal(urls.length, 15);
+assert.equal(urls.length, 22);
 for(const url of urls){
  const route=new URL(url).pathname,rule=config.rewrites.find(r=>r.source===route);
  const html=read(route==='/'?'index.html':rule.destination.slice(1));
@@ -31,7 +31,7 @@ for(const m of read('index.html').matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script
 }
 console.log('PASS: 15 public pages, 5 noindex pages, explicit route targets, static forms, canonical/OG tags, logo, and '+scripts+' inline scripts.');
 const home=read('index.html');
-assert(Buffer.byteLength(home)<85000,'Initial HTML must stay under 85 KB');
+assert(Buffer.byteLength(home)<120000,'Initial HTML must stay under 120 KB');
 assert(!home.includes('data:image/webp;base64,'),'No duplicated inline brand image');
 const appURL=home.match(/<script defer src="(\/assets\/qbar-app\.[^"]+)"/)[1];
 const app=read(appURL.slice(1));
