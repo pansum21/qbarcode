@@ -18,15 +18,15 @@ function status(message){const el=byId('firebaseAccountStatus');if(el)el.textCon
 function render(){
  const loggedIn=!!currentUser;
  const show=(id,visible)=>{const el=byId(id);if(el)el.hidden=!visible};
- show('qbarSignedIn',loggedIn);show('qbarSignedOut',ready&&!loggedIn);show('accountSettings',loggedIn&&from==='/studio');document.querySelectorAll('[data-studio-signout]').forEach(button=>button.hidden=!loggedIn);
+ show('qbarSignedIn',loggedIn);show('qbarSignedOut',ready&&!loggedIn);show('accountSettings',loggedIn&&from==='/studio');document.querySelectorAll('[data-studio-signout]').forEach(button=>button.hidden=!loggedIn||location.pathname==='/account');
  show('firebaseEmailLogin',!loggedIn&&accountTab==='login');show('firebaseSignup',!loggedIn&&accountTab==='signup');show('firebaseResetPassword',!loggedIn&&accountTab==='login');
  for(const [id,tab] of [['qbarTabLogin','login'],['qbarTabSignup','signup']]){const el=byId(id);if(el){el.classList.toggle('active',accountTab===tab);el.setAttribute('aria-selected',String(accountTab===tab))}}
  const intro=byId('qbarAccountIntro');if(intro)intro.textContent=accountTab==='signup'?'Create one account for QBar Studio, BioMi and PixelMint.':'Sign in once to continue across your studio tools.';
  const label=byId('qbarAccountEmail');if(label)label.textContent=currentUser?.email||currentUser?.displayName||'Account';
  const pass=byId('accountPassword');if(pass)pass.autocomplete=accountTab==='signup'?'new-password':'current-password';
  const continuation=byId('studioContinue');if(continuation){continuation.hidden=!loggedIn||!next;if(next){continuation.href=next;continuation.textContent=next.startsWith('/biomi/')?'Continue to BioMi':'Continue to your tool'}}
- document.querySelectorAll('[data-studio-account]').forEach(a=>{a.textContent=loggedIn?'My account':a.dataset.studioLabel||(location.pathname.startsWith('/pixelmint')?'Login / Sign Up':'Sign in');a.href=loggedIn?'/account?from='+encodeURIComponent(landingFor(location.pathname+location.search)==='/'?'/studio':(location.pathname+location.search)):'/account?next='+encodeURIComponent(safeStudioNext(a.dataset.studioNext)||location.pathname+location.search)});
- document.querySelectorAll('.header a[data-account-link]').forEach(a=>{a.textContent=loggedIn?'👤 My Account':'👤 Login / Sign Up';a.setAttribute('aria-label',loggedIn?'My account':'Login or create account');a.href=loggedIn?'/account?from=%2Fstudio':'/account?next=%2Fstudio'});
+ document.querySelectorAll('[data-studio-account]').forEach(a=>{a.textContent=loggedIn?'My account':a.dataset.studioLabel||(location.pathname.startsWith('/pixelmint')?'Login / Sign Up':'Sign in');a.href=loggedIn?'/account?from='+encodeURIComponent(landingFor(location.pathname+location.search)==='/'?'/studio':(location.pathname+location.search)):'/account?next='+encodeURIComponent(safeStudioNext(a.dataset.studioNext)||location.pathname+location.search);a.hidden=location.pathname==='/account'});
+ document.querySelectorAll('.header a[data-account-link]').forEach(a=>{a.textContent=loggedIn?'👤 My Account':'👤 Login / Sign Up';a.setAttribute('aria-label',loggedIn?'My account':'Login or create account');a.href=loggedIn?'/account?from=%2Fstudio':'/account?next=%2Fstudio';a.hidden=location.pathname==='/account'});
  document.dispatchEvent(new CustomEvent('studio:auth',{detail:{signedIn:loggedIn}}));
 }
 function switchTab(tab){accountTab=tab==='signup'?'signup':'login';render();status('')}
