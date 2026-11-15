@@ -10,7 +10,10 @@ export function safeStudioNext(value,origin=location.origin){
 }
 const byId=id=>document.getElementById(id);
 let currentUser=null,busy=false,ready=false,accountTab='login';
-const params=new URLSearchParams(location.search);\nconst next=safeStudioNext(params.get('next'));\nconst from=safeStudioNext(params.get('from'));\nconst landingFor=value=>value.startsWith('/biomi')?'/biomi':value.startsWith('/pixelmint')?'/pixelmint':'/';
+const params=new URLSearchParams(location.search);
+const next=safeStudioNext(params.get('next'));
+const from=safeStudioNext(params.get('from'));
+const landingFor=value=>value.startsWith('/biomi')?'/biomi':value.startsWith('/pixelmint')?'/pixelmint':'/';
 function status(message){const el=byId('firebaseAccountStatus');if(el)el.textContent=message}
 function render(){
  const loggedIn=!!currentUser;
