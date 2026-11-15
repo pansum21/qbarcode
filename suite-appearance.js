@@ -20,10 +20,6 @@ function apply(preferences=read()){
 window.applySuiteAppearance=apply;apply();
 window.addEventListener('storage',event=>{if(event.key===KEY)apply()});
 document.addEventListener('suite:appearance',()=>apply());
-if(location.pathname.startsWith('/biomi/dashboard')){
- document.body.classList.add('suite-biomi-editor');
- const area=document.querySelector('.top-actions');if(area&&!area.querySelector('[data-suite-settings]')){const link=document.createElement('a');link.className='btn suite-settings-link';link.dataset.suiteSettings='true';link.href='/settings?return=%2Fbiomi%2Fdashboard';link.textContent='⚙ Settings';area.prepend(link)}
-}
 const systemMedia=matchMedia('(prefers-color-scheme: dark)');systemMedia.addEventListener?.('change',()=>{if(read().mode==='system')apply()});
 
 /* Account-only appearance controls; the public header stays uncluttered. */
