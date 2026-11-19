@@ -1,4 +1,4 @@
-const CACHE_NAME = 'qbar-studio-v4';
+const CACHE_NAME = 'qbar-studio-v5';
 const CORE_ASSETS = [
   '/',
   '/index.html',
@@ -27,6 +27,16 @@ self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
   if (!req.url.startsWith('http')) return;
+
+  const url = new URL(req.url);
+  if (url.origin !== self.location.origin) return;
+
+  // BioMi is served through a live GitHub Pages rewrite and contains user
+  // profiles. Always fetch its pages fresh instead of keeping stale HTML.
+  if (url.pathname === '/biomi' || url.pathname.startsWith('/biomi/')) {
+    event.respondWith(fetch(req, { cache: 'no-store' }));
+    return;
+  }
 
   event.respondWith(
     caches.match(req).then((cached) => {

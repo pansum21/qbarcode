@@ -10,20 +10,23 @@ export function safeStudioNext(value,origin=location.origin){
 }
 const byId=id=>document.getElementById(id);
 let currentUser=null,busy=false,ready=false,accountTab='login';
-const next=safeStudioNext(new URLSearchParams(location.search).get('next'));
+const params=new URLSearchParams(location.search);
+const next=safeStudioNext(params.get('next'));
+const from=safeStudioNext(params.get('from'));
+const landingFor=value=>value.startsWith('/biomi')?'/biomi':value.startsWith('/pixelmint')?'/pixelmint':'/';
 function status(message){const el=byId('firebaseAccountStatus');if(el)el.textContent=message}
 function render(){
  const loggedIn=!!currentUser;
  const show=(id,visible)=>{const el=byId(id);if(el)el.hidden=!visible};
- show('qbarSignedIn',loggedIn);show('qbarSignedOut',ready&&!loggedIn);
+ show('qbarSignedIn',loggedIn);show('qbarSignedOut',ready&&!loggedIn);show('accountSettings',loggedIn&&from==='/studio');document.querySelectorAll('[data-studio-signout]').forEach(button=>button.hidden=!loggedIn||location.pathname==='/account');
  show('firebaseEmailLogin',!loggedIn&&accountTab==='login');show('firebaseSignup',!loggedIn&&accountTab==='signup');show('firebaseResetPassword',!loggedIn&&accountTab==='login');
  for(const [id,tab] of [['qbarTabLogin','login'],['qbarTabSignup','signup']]){const el=byId(id);if(el){el.classList.toggle('active',accountTab===tab);el.setAttribute('aria-selected',String(accountTab===tab))}}
  const intro=byId('qbarAccountIntro');if(intro)intro.textContent=accountTab==='signup'?'Create one account for QBar Studio, BioMi and PixelMint.':'Sign in once to continue across your studio tools.';
  const label=byId('qbarAccountEmail');if(label)label.textContent=currentUser?.email||currentUser?.displayName||'Account';
  const pass=byId('accountPassword');if(pass)pass.autocomplete=accountTab==='signup'?'new-password':'current-password';
  const continuation=byId('studioContinue');if(continuation){continuation.hidden=!loggedIn||!next;if(next){continuation.href=next;continuation.textContent=next.startsWith('/biomi/')?'Continue to BioMi':'Continue to your tool'}}
- document.querySelectorAll('[data-studio-account]').forEach(a=>{a.textContent=loggedIn?'My account':a.dataset.studioLabel||(location.pathname.startsWith('/pixelmint')?'Login / Sign Up':'Sign in');a.href=loggedIn?'/account':'/account?next='+encodeURIComponent(safeStudioNext(a.dataset.studioNext)||location.pathname+location.search)});
- document.querySelectorAll('.header a[data-route="/account"]').forEach(a=>{a.textContent=loggedIn?'👤 My Account':'👤 Login / Sign Up';a.setAttribute('aria-label',loggedIn?'My account':'Login or create account')});
+ document.querySelectorAll('[data-studio-account]').forEach(a=>{a.textContent=loggedIn?'My account':a.dataset.studioLabel||(location.pathname.startsWith('/pixelmint')?'Login / Sign Up':'Sign in');a.href=loggedIn?'/account?from='+encodeURIComponent(landingFor(location.pathname+location.search)==='/'?'/studio':(location.pathname+location.search)):'/account?next='+encodeURIComponent(safeStudioNext(a.dataset.studioNext)||location.pathname+location.search);a.hidden=location.pathname==='/account'});
+ document.querySelectorAll('.header a[data-account-link]').forEach(a=>{a.textContent=loggedIn?'👤 My Account':'👤 Login / Sign Up';a.setAttribute('aria-label',loggedIn?'My account':'Login or create account');a.href=loggedIn?'/account?from=%2Fstudio':'/account?next=%2Fstudio';a.hidden=location.pathname==='/account'});
  document.dispatchEvent(new CustomEvent('studio:auth',{detail:{signedIn:loggedIn}}));
 }
 function switchTab(tab){accountTab=tab==='signup'?'signup':'login';render();status('')}
@@ -53,12 +56,12 @@ async function action(id){
    const result=await (id==='firebaseSignup'?createUserWithEmailAndPassword:signInWithEmailAndPassword)(auth,email,password);finishSignIn(result);
   }else if(id==='firebaseResetPassword'){
    if(!email)throw Error('Enter your email first.');await sendPasswordResetEmail(auth,email);status('A reset email will be sent if this address has an account.');
-  }else if(id==='firebaseLogout'){await signOut(auth);currentUser=null;render();status('Signed out.')}
+  }else if(id==='firebaseLogout'){await signOut(auth);currentUser=null;location.replace(landingFor(from||next||location.pathname))}
  }catch(e){status(friendly(e))}finally{busy=false;document.querySelectorAll('.qbar-account button').forEach(b=>b.disabled=false)}
 }
 window.qbarSwitchAccountTab=switchTab;
 window.qbarAuth={render,getUser:()=>currentUser,ready:authReady,signOut:()=>signOut(auth)};
-document.addEventListener('click',e=>{const id=e.target.closest('button')?.id;if(id==='qbarTabLogin'||id==='qbarTabSignup'){switchTab(id==='qbarTabSignup'?'signup':'login');return}if(['firebaseGoogle','firebaseSignup','firebaseEmailLogin','firebaseResetPassword','firebaseLogout'].includes(id))action(id)});
+document.addEventListener('click',e=>{const id=e.target.closest('button')?.id;if(id==='qbarTabLogin'||id==='qbarTabSignup'){switchTab(id==='qbarTabSignup'?'signup':'login');return}if(e.target.closest('[data-studio-signout]')){action('firebaseLogout');return}if(['firebaseGoogle','firebaseSignup','firebaseEmailLogin','firebaseResetPassword','firebaseLogout'].includes(id))action(id)});
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='accountPassword'){e.preventDefault();action(accountTab==='signup'?'firebaseSignup':'firebaseEmailLogin')}});
 authReady.then(()=>{
  ready=true;onAuthStateChanged(auth,u=>{currentUser=u;if(u&&next&&location.pathname==='/account'){location.replace(next);return}render();window.qbarRefreshProjects?.();status('')},e=>status(friendly(e)));render();
